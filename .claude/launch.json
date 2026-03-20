@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Backend API (FastAPI)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["src/main.py"],
+      "port": 5000
+    },
+    {
+      "name": "ComfyUI Renderer",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "comfyui"],
+      "port": 8188
+    }
+  ]
+}
