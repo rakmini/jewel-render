@@ -32,4 +32,4 @@ echo "  ╚═══════════════════════
 echo ""
 
 cd "$(dirname "$0")/backend/src"
-exec python main.py
+exec python3 main.py
