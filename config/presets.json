@@ -1,0 +1,52 @@
+{
+  "presets": [
+    {
+      "id": "cool-blue",
+      "name": "Cool Blue",
+      "style": "Signature Instagram look with baby blue background",
+      "description": "Softly lit baby blue background - core brand identity",
+      "enabled": true,
+      "defaults": {
+        "temperature": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "sharpness": 0,
+        "grain": 0
+      },
+      "modes": ["edit", "generate", "video"],
+      "created": "2026-03-20"
+    },
+    {
+      "id": "white-retail",
+      "name": "White Retail",
+      "style": "Clean white background for retail partners",
+      "description": "Industry-standard white background format for retail submissions",
+      "enabled": true,
+      "defaults": {
+        "temperature": 0,
+        "saturation": 0,
+        "contrast": 0,
+        "sharpness": 0,
+        "grain": 0
+      },
+      "modes": ["edit", "generate", "video"],
+      "created": "2026-03-20"
+    },
+    {
+      "id": "yashica-film",
+      "name": "Yashica Film",
+      "style": "AI-generated models wearing jewelry, Yashica T4 aesthetic",
+      "description": "Jewelry shown on AI-generated models with film photography look - warm tones, lifted blacks, grain, vignette",
+      "enabled": true,
+      "defaults": {
+        "temperature": 15,
+        "saturation": 10,
+        "contrast": 5,
+        "sharpness": 0,
+        "grain": 20
+      },
+      "modes": ["edit", "generate", "video"],
+      "created": "2026-03-20"
+    }
+  ]
+}

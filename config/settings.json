@@ -1,0 +1,34 @@
+{
+  "comfyui": {
+    "host": "127.0.0.1",
+    "port": 8188,
+    "checkpoint": "sd_xl_base_1.0.safetensors",
+    "timeout_seconds": 600
+  },
+  "output": {
+    "width": 1170,
+    "height": 2532,
+    "jpeg_quality": 95,
+    "format": "jpeg"
+  },
+  "video": {
+    "format": "mp4",
+    "model": "sv3d_p",
+    "codec": "h264",
+    "bitrate": "5000k"
+  },
+  "feedback": {
+    "auto_add_approved_to_ril": true,
+    "auto_deposit_exports_to_ril": true,
+    "parameter_logging": true
+  },
+  "export": {
+    "folder": "~/JewelRender/exports",
+    "filename_pattern": "{preset}_{date}_{index}.jpg"
+  },
+  "ui": {
+    "theme": "light",
+    "preview_size": "thumbnail",
+    "queue_display": "recent"
+  }
+}
