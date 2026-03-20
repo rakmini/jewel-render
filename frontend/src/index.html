@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JewelRender</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 480px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .status {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        .status-row + .status-row {
+            border-top: 1px solid #222;
+        }
+        .status-label { color: #888; font-size: 0.85rem; }
+        .status-value { font-size: 0.85rem; }
+        .dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .dot.green { background: #22c55e; }
+        .dot.yellow { background: #eab308; }
+        .dot.red { background: #ef4444; }
+        .device-info {
+            color: #666;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JewelRender</h1>
+        <p class="subtitle">Batch Jewelry Rendering</p>
+
+        <div class="status">
+            <div class="status-row">
+                <span class="status-label">API Server</span>
+                <span class="status-value" id="api-status">
+                    <span class="dot yellow"></span>Checking...
+                </span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">ComfyUI</span>
+                <span class="status-value" id="comfyui-status">
+                    <span class="dot yellow"></span>Checking...
+                </span>
+            </div>
+        </div>
+
+        <p class="device-info" id="device-info"></p>
+    </div>
+
+    <script>
+        async function checkHealth() {
+            const apiEl = document.getElementById('api-status');
+            const comfyEl = document.getElementById('comfyui-status');
+            const deviceEl = document.getElementById('device-info');
+
+            deviceEl.textContent = `Connected from ${window.location.hostname} via ${navigator.userAgent.includes('Mac') ? 'macOS' : navigator.platform}`;
+
+            try {
+                const res = await fetch('/api/health');
+                const data = await res.json();
+                apiEl.innerHTML = '<span class="dot green"></span>Connected';
+
+                if (data.comfyui && data.comfyui.connected === true) {
+                    comfyEl.innerHTML = '<span class="dot green"></span>Connected';
+                } else {
+                    comfyEl.innerHTML = '<span class="dot yellow"></span>Not checked yet';
+                }
+            } catch (e) {
+                apiEl.innerHTML = '<span class="dot red"></span>Unreachable';
+                comfyEl.innerHTML = '<span class="dot red"></span>Unknown';
+            }
+        }
+
+        checkHealth();
+        setInterval(checkHealth, 10000);
+    </script>
+</body>
+</html>

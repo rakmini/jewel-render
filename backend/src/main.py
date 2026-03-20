@@ -8,6 +8,7 @@ Storage: Local filesystem
 """
 
 import logging
+import socket
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -166,12 +167,27 @@ async def general_exception_handler(request, exc):
 # Startup / Shutdown
 # ============================================================================
 
+def _get_local_ip() -> str:
+    """Detect the machine's LAN IP address."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return '127.0.0.1'
+
+
 @app.on_event('startup')
 async def startup_event():
     """Run on server startup."""
+    local_ip = _get_local_ip()
     logger.info('JewelRender API starting up...')
     logger.info(f'ComfyUI URL: {COMFYUI_URL}')
     logger.info(f'User data directory: {USER_DATA_DIR}')
+    logger.info(f'Local:   http://localhost:{API_PORT}')
+    logger.info(f'Network: http://{local_ip}:{API_PORT}  <-- use this on other devices')
     # TODO: Verify ComfyUI connection
     # TODO: Initialize presets
     # TODO: Load settings
