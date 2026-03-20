@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JewelRender — Mockup Overview</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { padding: 48px 32px; max-width: 1100px; margin: 0 auto; }
+    .overview-header { margin-bottom: 48px; }
+    .overview-header h1 { font-size: 32px; margin-bottom: 6px; }
+    .overview-header p  { color: var(--text2); font-size: 15px; }
+    .stories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .story-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 24px;
+      text-decoration: none; color: var(--text);
+      transition: all 0.15s; display: block;
+    }
+    .story-card:hover {
+      border-color: var(--accent); background: var(--bg3);
+      transform: translateY(-2px); box-shadow: var(--shadow);
+    }
+    .story-id {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      color: var(--accent2); margin-bottom: 6px;
+    }
+    .story-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .story-desc  { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
+    .story-tags  { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 20px;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+    }
+    .story-card:hover .tag { border-color: rgba(124,108,248,0.3); }
+
+    .section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--muted); text-transform: uppercase; margin: 36px 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="overview-header">
+    <h1>JewelRender Mockups</h1>
+    <p>User stories split from spec · Click any card to see the screen mockup</p>
+  </div>
+
+  <p class="section-title">Core Workspace</p>
+  <div class="stories-grid">
+    <a class="story-card" href="us-01-queue.html">
+      <div class="story-id">US-01</div>
+      <div class="story-title">Upload &amp; Image Queue</div>
+      <div class="story-desc">As a user I can drop jewelry photos into the queue, see thumbnails, and approve or reject each render with +/− buttons so the AI learns what I want.</div>
+      <div class="story-tags"><span class="tag">drag-and-drop</span><span class="tag">feedback</span><span class="tag">queue</span></div>
+    </a>
+
+    <a class="story-card" href="us-02-presets.html">
+      <div class="story-id">US-02</div>
+      <div class="story-title">Preset Selection</div>
+      <div class="story-desc">As a user I can switch between style presets (Cool Blue, White Retail, Yashica Film) and create, rename, duplicate or delete my own presets.</div>
+      <div class="story-tags"><span class="tag">presets</span><span class="tag">tabs</span><span class="tag">brand style</span></div>
+    </a>
+
+    <a class="story-card" href="us-03-edit.html">
+      <div class="story-id">US-03</div>
+      <div class="story-title">Image Edit Mode</div>
+      <div class="story-desc">As a user I can upload an existing photo and selectively change specific elements — background, metal colour, stone — while keeping the rest pixel-perfect.</div>
+      <div class="story-tags"><span class="tag">edit</span><span class="tag">selective change</span><span class="tag">inpainting</span></div>
+    </a>
+
+    <a class="story-card" href="us-04-recede.html">
+      <div class="story-id">US-04</div>
+      <div class="story-title">Recede — AI Outpainting</div>
+      <div class="story-desc">As a user with a too-tight product shot I can use the Recede slider to pull back the framing via AI outpainting without reshooting.</div>
+      <div class="story-tags"><span class="tag">outpainting</span><span class="tag">framing</span><span class="tag">slider</span></div>
+    </a>
+
+    <a class="story-card" href="us-05-generate.html">
+      <div class="story-id">US-05</div>
+      <div class="story-title">Image Generation Mode</div>
+      <div class="story-desc">As a user I can write a text prompt and optionally pick reference images to generate a brand-new product photo in the preset's style from scratch.</div>
+      <div class="story-tags"><span class="tag">generation</span><span class="tag">prompt</span><span class="tag">text-to-image</span></div>
+    </a>
+
+    <a class="story-card" href="us-06-video.html">
+      <div class="story-id">US-06</div>
+      <div class="story-title">360° Video Mode</div>
+      <div class="story-desc">As a user I can upload three key-angle photos (front, side, 3/4) and generate a seamless rotating MP4 loop of the jewelry.</div>
+      <div class="story-tags"><span class="tag">video</span><span class="tag">360°</span><span class="tag">SV3D</span></div>
+    </a>
+  </div>
+
+  <p class="section-title">Post-Processing &amp; Review</p>
+  <div class="stories-grid">
+    <a class="story-card" href="us-07-editor.html">
+      <div class="story-id">US-07</div>
+      <div class="story-title">VSCO-Style Image Editor</div>
+      <div class="story-desc">As a user I can open any rendered image and fine-tune it with light, colour, detail and film controls — plus crop, straighten, rotate and flip — before exporting.</div>
+      <div class="story-tags"><span class="tag">editor</span><span class="tag">adjust</span><span class="tag">crop</span><span class="tag">export</span></div>
+    </a>
+
+    <a class="story-card" href="us-08-ril.html">
+      <div class="story-id">US-08</div>
+      <div class="story-title">Reference Image Library (RIL)</div>
+      <div class="story-desc">As a user I can view and manage each preset's reference library — images that train the AI's style — with manual upload, auto-approved, and auto-export deposit.</div>
+      <div class="story-tags"><span class="tag">RIL</span><span class="tag">training</span><span class="tag">library</span></div>
+    </a>
+
+    <a class="story-card" href="us-09-settings.html">
+      <div class="story-id">US-09</div>
+      <div class="story-title">Settings</div>
+      <div class="story-desc">As a user I can configure the ComfyUI connection, checkpoint, video model, export path, and toggle auto-RIL deposit and parameter logging.</div>
+      <div class="story-tags"><span class="tag">settings</span><span class="tag">ComfyUI</span><span class="tag">toggles</span></div>
+    </a>
+  </div>
+
+  <script src="nav.js"></script>
+</body>
+</html>

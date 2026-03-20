@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US-05 — Image Generation · JewelRender</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+    .preset-tabs { display: flex; gap: 4px; }
+    .tab { padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: none; }
+    .tab.active { background: var(--bg3); border-color: var(--border); color: var(--text); }
+    .conn-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+
+    .mode-bar { padding: 10px 20px; display: flex; align-items: center; gap: 8px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .mode-pills { display: flex; background: var(--bg3); border-radius: 20px; padding: 3px; gap: 2px; border: 1px solid var(--border); }
+    .pill { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text2); border: none; background: none; }
+    .pill.active { background: var(--accent); color: #fff; }
+
+    .workspace { display: flex; flex: 1; overflow: hidden; }
+
+    /* Left panel */
+    .panel-left { width: 300px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--bg2); overflow: hidden; }
+    .panel-header { padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .panel-title { font-size: 13px; font-weight: 600; }
+    .queue-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; color: var(--muted); gap: 8px; }
+    .queue-empty-icon { font-size: 36px; }
+    .queue-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; margin: 4px 8px; }
+    .queue-item.generating { background: rgba(124,108,248,0.08); border-color: rgba(124,108,248,0.3); }
+    .queue-item.done { background: rgba(74,222,128,0.07); border-color: rgba(74,222,128,0.2); }
+    .qthumb { width: 48px; height: 56px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .qt-gen { background: linear-gradient(135deg, #200a40, #6020a0); }
+    .qt-done { background: linear-gradient(135deg, #1a2040, #3040a0); }
+    .queue-info { flex: 1; }
+    .q-name { font-size: 12px; font-weight: 500; display: block; }
+    .q-meta { font-size: 11px; color: var(--text2); display: block; }
+    .fb-btn { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .progress-mini { height: 2px; background: var(--bg3); border-radius: 1px; margin-top: 4px; }
+    .progress-mini-fill { height: 100%; background: var(--accent); border-radius: 1px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+    /* Right panel */
+    .panel-right { flex: 1; overflow-y: auto; padding: 20px; display: flex; gap: 20px; background: var(--bg); }
+    .controls-col { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .section { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+
+    .prompt-area { position: relative; }
+    .prompt-textarea {
+      width: 100%; min-height: 100px; background: var(--bg3);
+      border: 1px solid var(--accent); color: var(--text);
+      border-radius: var(--radius-sm); padding: 10px 12px;
+      font-size: 13px; resize: vertical; outline: none; line-height: 1.6;
+    }
+    .prompt-hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .prompt-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .prompt-tag {
+      font-size: 11px; padding: 3px 8px; border-radius: 20px;
+      background: rgba(124,108,248,0.15); border: 1px solid rgba(124,108,248,0.3);
+      color: var(--accent2); cursor: pointer;
+    }
+    .prompt-tag:hover { background: rgba(124,108,248,0.25); }
+
+    /* Reference images */
+    .ref-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+    .ref-thumb {
+      aspect-ratio: 3/4; border-radius: var(--radius-sm); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; position: relative; cursor: pointer;
+    }
+    .ref-thumb:hover .ref-remove { opacity: 1; }
+    .ref-1 { background: linear-gradient(135deg, #1a2040, #3040a0); }
+    .ref-2 { background: linear-gradient(135deg, #201820, #602040); }
+    .ref-3 { background: linear-gradient(135deg, #182020, #206040); }
+    .ref-add { border: 2px dashed var(--border); background: var(--bg3); color: var(--muted); font-size: 24px; }
+    .ref-add:hover { border-color: var(--accent); color: var(--accent2); }
+    .ref-remove { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; opacity: 0; transition: opacity 0.15s; }
+
+    /* Preset sliders */
+    .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .slider-row label { font-size: 12px; color: var(--text2); width: 90px; flex-shrink: 0; }
+    .slider-row .val { font-size: 12px; width: 26px; text-align: right; flex-shrink: 0; }
+
+    /* Yashica special notice */
+    .yashica-note { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--amber); }
+
+    .bottom-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: var(--bg2); border-top: 1px solid var(--border); flex-shrink: 0; }
+    .bar-label { font-size: 12px; color: var(--text2); display: flex; gap: 8px; align-items: center; }
+    .bar-actions { display: flex; gap: 8px; }
+    .export-count { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+    .progress-wrap { display: flex; align-items: center; gap: 10px; }
+    .progress-bar { width: 140px; height: 4px; background: var(--bg3); border-radius: 2px; border: 1px solid var(--border); }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <div class="story-badge"><strong>US-05</strong> Image Generation — create new jewelry images from text + references</div>
+
+  <div class="header">
+    <span class="logo">JewelRender</span>
+    <div class="preset-tabs">
+      <button class="tab">Cool Blue</button>
+      <button class="tab">White Retail</button>
+      <button class="tab active">Yashica Film</button>
+      <button class="tab">+</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="conn-badge"><span class="dot dot-green"></span>ComfyUI connected</div>
+    </div>
+  </div>
+
+  <div class="mode-bar">
+    <div class="mode-pills">
+      <button class="pill">Edit</button>
+      <button class="pill active">Generate</button>
+      <button class="pill">360 Video</button>
+    </div>
+    <span style="font-size:12px;color:var(--text2);margin-left:12px">Create new images from a text prompt and reference images</span>
+  </div>
+
+  <div class="workspace">
+    <!-- Left: queue showing generating + done -->
+    <div class="panel-left">
+      <div class="panel-header">
+        <span class="panel-title">Generated Images</span>
+        <span style="font-size:11px;color:var(--text2)">2 images</span>
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        <div class="queue-item generating">
+          <div class="qthumb qt-gen">✨</div>
+          <div class="queue-info">
+            <span class="q-name">generate_001.jpg</span>
+            <span class="q-meta" style="color:var(--accent2)">Generating… 67%</span>
+            <div class="progress-mini"><div class="progress-mini-fill" style="width:67%"></div></div>
+          </div>
+        </div>
+        <div class="queue-item done">
+          <div class="qthumb qt-done">💍</div>
+          <div class="queue-info">
+            <span class="q-name">generate_000.jpg</span>
+            <span class="q-meta" style="color:var(--green)">✓ Complete</span>
+          </div>
+          <div style="display:flex;gap:4px">
+            <button class="fb-btn" style="color:var(--green);border-color:rgba(74,222,128,0.4)">+</button>
+            <button class="fb-btn">−</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: controls -->
+    <div class="panel-right">
+      <div class="controls-col">
+
+        <!-- Yashica special notice -->
+        <div class="yashica-note">
+          🎞 <strong>Yashica Film preset active</strong> — AI will generate a realistic person wearing the jewelry, using your model reference pool. Warm tones, lifted blacks, subtle grain and vignette applied automatically.
+        </div>
+
+        <!-- Prompt -->
+        <div class="section">
+          <h3>Text Prompt</h3>
+          <div class="prompt-area">
+            <textarea class="prompt-textarea">Delicate emerald and diamond ring worn on hand, natural light, soft bokeh background, close-up editorial shot, Yashica T4 aesthetic</textarea>
+          </div>
+          <div class="prompt-hint">Describe the jewelry, framing, and mood. The preset style will be applied automatically.</div>
+          <div class="prompt-tags">
+            <span class="prompt-tag">+ close-up</span>
+            <span class="prompt-tag">+ editorial</span>
+            <span class="prompt-tag">+ natural light</span>
+            <span class="prompt-tag">+ soft bokeh</span>
+            <span class="prompt-tag">+ on model</span>
+          </div>
+        </div>
+
+        <!-- Reference images -->
+        <div class="section">
+          <h3>Reference Images</h3>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:2px">Show the AI what style and framing you want. Pulled from RIL or upload new ones.</p>
+          <div class="ref-grid">
+            <div class="ref-thumb ref-1">💍<div class="ref-remove">✕</div></div>
+            <div class="ref-thumb ref-2">💎<div class="ref-remove">✕</div></div>
+            <div class="ref-thumb ref-3">🤚<div class="ref-remove">✕</div></div>
+            <div class="ref-thumb ref-add">+</div>
+          </div>
+        </div>
+
+        <!-- Preset adjustments -->
+        <div class="section">
+          <h3>Preset Adjustments (Yashica Film)</h3>
+          <div>
+            <div class="slider-row"><label>Temperature</label><input type="range" min="-100" max="100" value="15"><span class="val">+15</span></div>
+            <div class="slider-row"><label>Saturation</label><input type="range" min="-100" max="100" value="10"><span class="val">+10</span></div>
+            <div class="slider-row"><label>Contrast</label><input type="range" min="-100" max="100" value="5"><span class="val">+5</span></div>
+            <div class="slider-row"><label>Sharpness</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+            <div class="slider-row"><label>Grain</label><input type="range" min="-100" max="100" value="20"><span class="val">+20</span></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:14px">
+          ✨ Generate Image
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="bar-label"><span class="dot dot-amber" style="animation:pulse 1.5s infinite"></span><strong>Yashica Film</strong><span style="color:var(--border)">/</span>Generate</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:67%"></div></div>
+      <span style="font-size:12px;color:var(--text2)">Generating… 67%</span>
+    </div>
+    <div class="bar-actions">
+      <button class="btn btn-primary">Generate All</button>
+      <button class="btn btn-secondary">Export <span class="export-count">1</span></button>
+    </div>
+  </div>
+
+  <script src="nav.js"></script>
+</body>
+</html>
