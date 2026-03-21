@@ -136,6 +136,15 @@ async def queue_render():
 # Mount frontend static files
 # This serves the HTML/CSS/JS at the root path
 frontend_dir = Path(__file__).parent.parent.parent / 'frontend' / 'src'
+mockups_dir = Path(__file__).parent.parent.parent / 'mockups'
+
+if mockups_dir.exists():
+    app.mount(
+        '/mockups',
+        StaticFiles(directory=str(mockups_dir), html=True),
+        name='mockups'
+    )
+    logger.info(f'Mockups mounted from: {mockups_dir}')
 
 if frontend_dir.exists():
     app.mount(
