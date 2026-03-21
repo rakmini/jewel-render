@@ -1,465 +1,396 @@
-# JewelRender Features (Detailed Specs)
+# JewelRender Features v4 (Detailed Specs)
 
 ## Style Presets System
 
 ### Current Presets
 
-#### Cool Blue
-- The company's signature Instagram look
-- Softly lit baby blue background
-- Core brand identity customers recognize
-- Primary preset for social media
+#### Cool Blue (Priority)
+- Signature Instagram look, softly lit baby blue background
+- Replicates real physical photography setup
+- RIL teaches AI how light behaves in soft baby blue environment
 
 #### White Retail
-- Clean white background
-- Industry-standard format for retail partner submissions
-- Used when converting Cool Blue renders via cross-preset pipeline
+- Clean white lightbox photography
+- Specs from retail partners
+- New retail partners become new named presets
 
-#### Yashica Film
-- Jewelry shown on AI-generated models (Sora-style)
-- Yashica T4 with Carl Zeiss T* lens aesthetic
+#### Yashica Film (Future)
+- AI-generated models wearing jewelry (Sora-style)
+- Yashica T4 / Carl Zeiss T* film look
 - Warm tones, lifted blacks, subtle grain, soft vignette, halation
-- Special: AI generates people wearing the jewelry
 
-### Future Presets (Examples)
-- Soft Pink — soft pink background variant
-- Black Luxury — dark/black premium aesthetic
-- (User can create any new preset as needed)
-
-### Preset Management UI
+### Preset Management
 - **+** button to add new preset
-- **Duplicate** option for each preset (starting point for variations)
-- **Delete** option per preset
-- **Rename** presets inline
+- **Duplicate** — starting point for variations
+- **Delete** — per preset
+- **Rename** — inline editable name field
 - Tab switcher at top to select active preset
-- All presets independent — can work on multiple simultaneously
 
 ---
 
 ## Three Core Export Modes
 
-All modes available in every preset. Choose one, render, then switch if needed.
+All modes available in every preset.
 
 ### 1. Image Edit Mode
 
-**Purpose**: Take an existing photo and selectively change specific elements only.
-
-**Use Cases**:
-- Product shot too tight? Use Recede to extend background
-- Need background color changed? Recolor background while keeping jewelry identical
-- Metal color adjustment? Change only metal appearance, preserve stone rendering
-- Cross-preset conversion: render in Cool Blue, edit into White Retail (only background changes)
-
-**Workflow**:
-1. Upload existing image or drag from previous render
-2. Select elements to modify (background, metal, stone, etc.)
-3. Click Render
-4. Review in editor, export when ready
+Upload existing jewelry photos and selectively modify:
+- **Background color** — determined by preset (Cool Blue = baby blue, White Retail = white)
+- **Metal type** — toggle buttons: White Gold, Rose Gold, Yellow Gold (with colored dots)
+- **Metal karat** — sub-pills: 10k, 14k, 18k (modifies metal saturation only, NOT geometry)
+- **Gemstone color** — Diamond, Ruby, Sapphire (Blue/Pink/Yellow/White), Emerald, Pearl; AI references real photos from RIL for true light behavior — not a color overlay
+- **Size in frame** — Recede slider (0–50%)
 
 **Key Guarantee**: Jewelry, reflection, stone appearance stay pixel-perfect. Only requested elements change.
 
 ### 2. Image Generation Mode (Sora-Style)
 
-**Purpose**: Create entirely new images from scratch.
-
-**Input**:
-- Text prompt describing the jewelry and desired context
-- Reference images (from RIL or upload new ones) to show style/aesthetic
-- Angle/framing preferences
-
-**Output**:
-- Brand new photograph of jewelry in the preset's style
-- Dimensions: 1170×2532 (iPhone portrait)
-- Quality: JPEG 95
-
-**Special Case - Yashica Film**:
-- AI generates realistic-looking people wearing the jewelry
-- Uses reference pool of model photos to maintain consistent "look"
-- Critical for portfolio/marketing where jewelry shown on humans vs. plain background
-
-**Workflow**:
-1. Write text prompt ("delicate emerald ring on white background, soft lighting")
-2. Upload or select reference images (optional but recommended)
-3. Click Render
-4. Review in editor, approve/reject (+/−), export when perfect
+Create new jewelry images from scratch:
+- **Text prompt** — words map to RIL folder names ("invisible setting white gold diamond ring" pulls from those RIL folders)
+- **Optional reference image upload**
+- Full access to ALL RIL folders across all categories
 
 ### 3. 360 Video Mode
 
-**Purpose**: Generate seamless rotating loops of jewelry from multiple angles.
-
-**The Problem It Solves**:
-Seamless 360° looping has been a major frustration — traditional video editing and basic AI often fail to complete a full uninterrupted turn. JewelRender solves this.
-
-**Input**:
-- 3 key angle JPGs (Front, Side, 3/4 view) — upload into drag zones
-- Reference video pool (optional) — company has 20+ existing rotation videos
-- Video preferences: length, rotation speed, etc.
-
-**Output**:
-- MP4 video
-- Seamless loop (ends connect perfectly to start)
-- Jewelry smoothly rotates 360° with no jumps or inconsistencies
-- All preset styles supported (Cool Blue rotation, White Retail rotation, etc.)
-
-**AI Models**:
-- Primary: SV3D_p (Stable Video 3D, latest variant)
-- Fallback: WAN 2.1 if SV3D_p unavailable
-- Training: Company's 20+ existing rotation videos provide reference data
-
-**Workflow**:
-1. Upload 3 key angles (front, side, 3/4 view)
-2. Select rotation direction, speed, video length
-3. Click Render
-4. Review playback, export when ready
+Generate seamless rotating loops:
+- Upload key angle JPGs (Front, Side, 3/4 view + optional Top/Lower)
+- AI fills in all frames between key angles for smooth rotation
+- Video Recede: same outpainting concept applied to all video frames
+- Export aspect ratios: 9:16 (stories/reels), 1:1 (square), 4:5 (post)
+- Duration: 3s, FPS: 24, Loop: Seamless, Format: MP4
+- Model: SV3D_p (primary), WAN 2.1 (fallback)
 
 ---
 
-## Recede: AI Outpainting for Framing
+## Material Controls (Workspace)
 
-**The Problem**: Product shot too tight/zoomed in → need more background breathing room.
+### Metal Type
+Three toggle pills (mutually exclusive) with colored dots:
+- ⚪ **White Gold** (light grey dot)
+- 🟡 **Yellow Gold** (amber dot)
+- 🩷 **Rose Gold** (pink dot)
 
-**The Solution**: Recede is AI outpainting purpose-built for product photography.
+### Karat Sub-Pills
+Shown below Metal Type (mutually exclusive):
+- **10k** — 41.7% gold, highest durability
+- **14k** — 58.5% gold, standard
+- **18k** — 75% gold, richest color saturation
 
-**How It Works**:
-1. User sets **Recede slider** (0–50%) — defines how much to pull back
-2. Clicks **Recede button**
-3. AI regenerates entire image with jewelry at smaller scale in frame
-4. Background extends outward in preset's style
-5. Jewelry rendering stays pixel-perfect, only background changes
-6. Output stays 1170×2532
+Karat modifies metal saturation only — geometry/form is unchanged.
 
-**Visual Feedback**:
-- Slider starts at 0% (greyed out button)
-- When slider moves, button becomes active
-- Button shows "Recede 10%" (or current %)
-- During processing: "Regenerating..."
-- Completes when image appears in queue
+### Gemstone
+Toggle pills with colored dots (mutually exclusive):
+- ◻ **Diamond** (clear/white dot)
+- 🔴 **Ruby** (red dot)
+- 🔵 **Sapphire** (shows sub-color pills: Blue / Pink / Yellow / White)
+- 🟢 **Emerald** (dark green dot)
+- 🤍 **Pearl** (cream dot)
 
-**Why This Matters**:
-- Avoids reshooting product photos
-- Preserves jewelry quality (no scaling artifacts)
-- Extends usable framing from tight/dramatic to airy/retail
-- Much faster than manual retouching
+AI references real photos from RIL — not a color overlay.
+
+### Product Type
+Toggle pills (used for RIL tagging at export):
+Ring / Necklace / Bracelet / Earrings / Watch / Grillz
+
+---
+
+## Post-Render Studio
+
+### Overview
+Full-screen split view that opens after "Render All" or clicking a rendered image. Split: image preview left, controls right. Close button returns to Workspace.
+
+### Left Half — Image Preview
+
+**Overlay controls:**
+- **Top-left**: Before/After pill, Brush pill
+- **Top-right**: ← 1/N → history nav + History button
+  - History panel opens with full archive, filters, stats, per-item export
+
+**Image**: 340px wide, rounded top corners, shadow. Displayed against `#e8e6e2` background.
+
+**Below image (flush, same width)**: Amendments textarea + Apply button
+
+**Bottom**: Filename + prev/next image navigation
+
+### Right Half — Controls
+
+#### GREEN ZONE — "● Live — changes apply instantly"
+Sliders update preview in real-time, no re-render needed:
+- Temperature, Saturation, Contrast, Sharpness, Grain
+- All centered at 0, drag left/right
+- **Export button** (full width) — exports and auto-files to RIL. Page stays open.
+- Hint: "Happy with what you see? Export now. Auto-files to RIL."
+
+#### AMBER ZONE — "◆ Re-render — AI regenerates image"
+Changes here require AI to regenerate:
+- Metal Type pills + Karat sub-pills
+- Gemstone pills (with Sapphire sub-colors)
+- Recede slider (0–50%)
+- **Re-render button** — greyed until something changes, then activates
+
+#### Below Zones
+- **Product Type** — Ring, Necklace, Bracelet, Earrings, Watch, Grillz (for RIL tagging)
+- **Generate Views** — Side, Top, Lower, 3/4 (multi-select pills) + Generate button
+- **Open Editor** button — for Crop / deep adjustment
+
+---
+
+## Render History (Permanent Archive)
+
+Every render is saved permanently — exported or not. Nothing is ever deleted during a session.
+
+### Per Entry
+- Label (description of what changed)
+- Timestamp
+- Tag: `initial`, `amendment`, `re-render`, `brush`
+- Exported status (boolean)
+- Material snapshot at time of render (metal, karat, gemstone, product type)
+
+### Features
+- Back/forward arrows to navigate versions (← 1/N →)
+- History panel: scrollable list with filter tabs
+- Filter tabs: All / Exported / Amended / Re-renders
+- Stats bar: total renders, total exported
+- Export button (↓) on hover for any version — retroactive export from old versions
+- Green ✓ badge on exported items
+- Material line per entry (e.g., "Rose Gold · 18k · Bracelet")
+- Color-coded tags: green=exported, amber=amendment, blue=re-render
+
+### RIL Filing
+When exported, image files to correct RIL folders based on **that version's material snapshot** — not current controls. A Rose Gold 18k render files to Rose Gold + Diamond + Bracelet even if you've since switched to White Gold.
+
+### Toast Notification
+On export: "✓ Exported → RIL: Rose Gold + Diamond + Bracelet"
+Auto-dismisses after 2.2s.
+
+---
+
+## Amendments Prompt
+
+Text area below image in Post-Render Studio:
+- Broad image-level changes: "make background slightly darker", "add soft shadow underneath", "smooth the links on the left"
+- AI regenerates in place; all controls stay
+- Version saved to History with `amendment` tag
+
+---
+
+## Selection Brush Tool
+
+Targeted post-generation cleanup:
+1. Enable brush (top-left pill in Post-Render Studio)
+2. Adjust brush size (slider with live preview dot)
+3. Paint over area to mark
+4. Describe fix: "remove shadow", "smooth edge", "fix reflection"
+5. AI only touches marked area
+6. Version saved to History with `brush` tag
+
+---
+
+## Recede (AI Outpainting)
+
+Solves "shot too tight" problem without reshooting.
+
+1. Set Recede slider (0–50%)
+2. AI regenerates with jewelry at smaller scale in frame
+3. Background extends outward; jewelry rendering stays pixel-perfect
+4. Output stays 1170×2532
+5. **Video Recede**: same concept applied to all video frames
+
+Visual feedback: slider activates button showing "Recede X%". During processing: "Regenerating..."
 
 ---
 
 ## Reference Image Library (RIL)
 
-### What It Is
+Two purposes:
+1. **AI training library** — teaches materials, lighting, styles per environment
+2. **Searchable database** — find any approved image/video fast
 
-A **persistent cloud of images per preset** that teaches the AI what that preset should look like. Images are tied to presets, not sessions. Once added, they stay permanently unless manually removed.
+### Folder Categories (per preset)
 
-### Why It Matters
+**Materials**: White Gold, Yellow Gold, Rose Gold
 
-RIL creates a **compounding feedback loop**:
-- Add reference examples → AI learns the style
-- Export approved images → they enter RIL → next batch is smarter
-- Keep only approved images → AI steadily improves
-- More exports = smarter AI (zero extra effort)
+**Gemstones**: White Diamond, Ruby, Sapphire (Blue/Pink/Yellow/White), Emerald, Pearl
 
-### Three Ways Images Enter RIL
+**Product Types**: Rings, Bracelets, Necklaces, Earrings, Watches, Grillz
 
-#### 1. Manual Upload
-- Drag reference images into RIL drop zone
-- Use existing photos, inspiration images, style examples
-- Immediate effect on next render
+**Setting Styles**: Invisible, Prong, Bezel, Channel, Pave, Tension (expandable)
 
-#### 2. Auto-Add Approved Images
-- Toggle in Settings: "Auto-add approved images to RIL" (default: ON)
-- When you click **+** on a rendered image → it auto-enters RIL
-- No extra steps — approval = auto-deposit
+### Auto-Filing
+Export = only approval path. On export, image auto-files to MULTIPLE folders simultaneously. Example: Rose Gold 18k Diamond Ring → files to Rose Gold + White Diamond + Rings.
 
-#### 3. Auto-Deposit Exports
-- Toggle in Settings: "Auto-deposit exports to RIL" (default: ON)
-- When you **Export** an image → it auto-duplicates into RIL
-- Export = ultimate approval — you edited it, you're happy
-- Creates closed loop: Render → Edit → Export → RIL
-
-### Settings Toggles (in Settings Tab)
-
-- **Auto-add approved to RIL** (default: ON)
-- **Auto-deposit exports to RIL** (default: ON)
-- **Parameter logging** (default: ON) — stores settings/prompts that work
-
-### Storage
-
-- RIL files stored locally: `~/JewelRender/presets/{preset-id}/library/`
-- Each preset has independent RIL
-- Cool Blue's library teaches one aesthetic, Yashica Film's teaches another
-- Nothing on external servers — all local, all persistent
-
-### Future Enhancement: LoRA Fine-Tuning
-
-Periodically use approved images in RIL to train a small LoRA adapter. Compounds learning directly into the AI model. (Not yet implemented.)
+### Compounding Loop
+Generate → Edit → Export → RIL folders → next batch smarter → repeat.
 
 ---
 
-## Feedback & Training System
+## Upload Centre
 
-### Per-Image Feedback Buttons
+Central hub for seeding the RIL with reference photos.
 
-Every rendered image in the queue has **+** and **−** buttons:
+### Phase 1: Manual Seeding (one-time setup)
+- Drop batch into staging area
+- Drag images into folder target pills (Materials / Gemstones / Product Types / Setting Styles)
+- Single photo can go into multiple folders
+- ~5-15 examples per folder to seed
 
-- **+** (Approve) — "This is spot on, more like this"
-- **−** (Reject) — "This missed, steer away"
-
-### Visual Feedback
-
-- Button state changes when clicked
-- Approved/Rejected count shown in queue (e.g., "5 approved, 2 rejected")
-- Approved images are candidates for RIL entry (if auto-add enabled)
-
-### How Learning Compounds (Persists Across Sessions)
-
-#### 1. Reference Curation (Primary)
-- Approved (+) images → auto-add to RIL (if toggle ON)
-- Rejected (−) images → excluded from RIL
-- The "intelligence" lives in the curated image set on disk — never lost
-
-#### 2. Export Auto-Deposit
-- Every exported image enters RIL
-- Export is the **ultimate approval**
-- Creates: Render → Edit → Export → image teaches next batch
-
-#### 3. Parameter Logging
-- Store exact settings/prompts that produced good vs. bad results
-- App favors settings/prompts that work over time
-- Future: use this log to auto-suggest parameters
-
-#### 4. Future: LoRA Fine-Tuning
-- Periodically use approved image set to train small LoRA adapter
-- Compounds real learning into the model weights
-- (Planned, not yet implemented)
-
-### All Data Stored Locally
-
-- Nothing depends on a chat session staying alive
-- Feedback stored: `~/JewelRender/presets/{preset-id}/feedback.json`
-- Parameter log stored: `~/JewelRender/feedback_log.json`
-- Learning is **permanent** and **compounds**
+### Phase 2: AI-Suggested Sorting
+- AI analyzes uploads, suggests folder tags
+- User confirms or corrects
+- Gets smarter over time
 
 ---
 
-## VSCO-Style Image Editor
+## RIL Browser
 
-Slide-out overlay that opens when clicking any rendered image in the queue.
-
-### Adjust Tab
-
-**Per-image fine-tuning controls**. All sliders centered at 0, drag left to decrease, right to increase.
-
-**Light Controls**:
-- Exposure — overall brightness
-- Contrast — difference between light and dark
-- Highlights — brightest areas
-- Shadows — darkest areas
-
-**Color Controls**:
-- Temperature — warm (right) / cool (left)
-- Tint — magenta / cyan shift
-- Saturation — color intensity
-- Vibrance — natural color pop
-- Skin Tone — shift for people photos
-
-**Detail Controls**:
-- Sharpness — edge definition
-- Clarity — local contrast and texture
-
-**Film Controls**:
-- Grain — digital grain texture
-- Fade — washed out look
-- Vignette — dark corners
-
-### Crop Tab
-
-**Visual crop tool** with VSCO-style interface.
-
-**Aspect Ratio Pills** (quick presets):
-- Free — custom crop
-- 1:1 — square
-- 4:5 — Instagram portrait
-- 9:16 — TikTok/Reels
-- 16:9 — widescreen
-
-**Crop Tools**:
-- **Rule-of-thirds grid** — visual guide for composition
-- **Corner drag handles** — adjust crop boundaries
-- **Straighten slider** — ±45° rotation for fixing tilted shots
-- **Transform buttons** — Rotate L/R, Flip H/V
-
-### Navigation & Controls
-
-- **Before/After compare** — toggle to see changes
-- **Prev/Next buttons** — jump between images in queue
-- **Reset All** — revert all adjustments to 0
-- **Apply** — save adjustments to image
-- **Export** — save image to export folder + auto-deposit to RIL
+Searchable database view:
+- **Search bar** — text maps to folder names ("cool blue diamond necklace white gold")
+- **Left sidebar** — folder navigation (Presets, Materials, Gemstones, Product Types, Setting Styles)
+- **Image/Video toggle** — switch between still and video archives
+- **Thumbnail grid** — 4-column, multi-tag labels on each thumbnail
+- Export directly from browser
 
 ---
 
-## Per-Preset Adjust Sliders (Always Visible)
+## Generate Additional Views
 
-Independent from the editor. These define the **preset's default look** and apply to entire batches.
+From Post-Render Studio controls panel:
+- Multi-select pills: Side / Top / Lower / 3/4
+- AI generates anatomically identical views of same object
+- Views feed into 360 Video assembly
+- Hint: "AI generates identical object from selected angles"
 
-**Available in every preset tab**:
+---
+
+## Cross-Preset Pipeline
+
+1. Generate 50 images in Cool Blue style
+2. Take finished renders to White Retail preset in Edit mode
+3. Only background/lighting changes — jewelry stays identical
+4. Same physical object, different environment
+5. Avoids regeneration from scratch
+
+---
+
+## Per-Preset Adjust Sliders (Workspace)
+
+Always visible in preset tab, apply to entire batch:
 - Temperature (±)
 - Saturation (±)
 - Contrast (±)
 - Sharpness (±)
 - Grain (±)
 
-All centered at 0. Change these to adjust the baseline for all renders in that preset.
+All centered at 0. These define the preset's default baseline look.
+
+---
+
+## VSCO-Style Image Editor (Deep Edit)
+
+Opened via "Open Editor" in Post-Render Studio, or by clicking an image in the queue.
+Full-width panel slides out from right.
+
+### Adjust Tab
+
+**Light**: Exposure, Contrast, Highlights, Shadows
+
+**Color**: Temperature, Tint, Saturation, Vibrance
+
+**Detail**: Sharpness, Clarity
+
+**Film**: Grain, Fade, Vignette
+
+### Crop Tab
+
+**Aspect Ratio Pills**: Free / 1:1 / 4:5 / 9:16 / 16:9
+
+**Straighten**: ±45° slider
+
+**Transform**: Rotate L/R, Flip H/V
+
+**Rule-of-thirds grid** with corner drag handles
+
+### Controls
+- Before/After compare toggle
+- Prev/Next image navigation
+- Reset all adjustments
+- Apply / Cancel
+- Export Image button
 
 ---
 
 ## Export
 
-### Export Button (Bottom Bar)
+### In Post-Render Studio (GREEN ZONE)
+- Export button (full width)
+- Saves to configured export folder as JPEG 95
+- Auto-files to multiple RIL folders based on current version's material snapshot
+- Page stays open — keep working (assembly line)
+- Toast notification confirms RIL folders targeted
 
-Located next to "Render All" button at the bottom of the screen.
-
-**Shows**:
-- Current export folder path (clickable to change)
-- Number of images ready to export
-
-**On Click**:
-1. All selected images save to export folder as JPEG 95
-2. Each image auto-duplicates into active preset's RIL (if auto-deposit toggle ON)
-3. Images can then be used elsewhere (social media, email, print)
-
-### Configurable Export Path
-
-- Click export path text to open file picker
-- Change to any folder on Mac Mini
-- Default: `~/JewelRender/exports/`
+### Export Path
+- Shown in bottom bar (Workspace)
+- Clickable to change folder
+- Default: `~/Desktop/JewelRender Exports`
 
 ---
 
 ## Batch Processing & Progress
 
 ### Render All Button
-
-- Renders all images in current queue simultaneously (as many as ComfyUI allows)
-- Shows progress bar at bottom (0–100%)
-- Real-time updates as images complete
-- Can queue new images while rendering
-
-### Progress Indicators
-
-- Bottom bar shows: Active preset + mode (e.g., "Cool Blue / Generate")
-- Progress bar: Percentage complete
-- Queue shows: "5/12 rendered" or similar
+- Renders all images in queue (as many as ComfyUI allows simultaneously)
+- Progress bar at bottom (0–100%)
+- Bottom bar shows: Active preset + mode (e.g., "Cool Blue · Edit")
 
 ---
 
 ## Settings Tab
 
-Central location for configuration and toggles.
-
 ### ComfyUI Connection
 - Host (default: `127.0.0.1`)
 - Port (default: `8188`)
-- Test connection button
+- Test connection button + status dot
 
 ### Checkpoint
 - Current: `sd_xl_base_1.0.safetensors`
-- Dropdown to select other checkpoints (when available)
 
 ### Output Settings
-- Dimensions: 1170×2532 (locked, shown for reference)
-- JPEG quality: 95 (locked, shown for reference)
+- Dimensions: 1170×2532 (locked)
+- JPEG quality: 95 (locked)
 
 ### Video Output
-- Video format: MP4
-- Video model: SV3D_p / WAN 2.1 selector
-- Video length/speed preferences
+- Format: MP4
+- Model: SV3D_p / WAN 2.1 selector
 
-### Feedback & Training Toggles
-- **Auto-add approved to RIL** (default: ON)
+### RIL & Export Toggles
 - **Auto-deposit exports to RIL** (default: ON)
-- **Parameter logging** (default: ON)
+- **Auto-file by material/gem/type** (default: ON)
+- **Parameter logging on +/−** (default: ON)
 
-### Saved Profiles (Future)
-- Save/load preset configurations
-- (Not yet implemented)
-
----
-
-## User Interface Layout
-
-### Header
-- JewelRender logo + tagline
-- Connection status indicator
-
-### Preset Tabs (Top Center)
-- One tab per preset
-- **+** button to add new preset
-- Per-preset: Duplicate, Delete, Rename options
-
-### Mode Switcher (Per Preset)
-- Pill toggle: Edit / Generate / 360 Video
-- Changes available controls below
-
-### Left Panel (Image Queue)
-- Drag-and-drop zone for uploads
-- File list with thumbnails
-- +/− feedback buttons per image
-- Approved/rejected counts
-
-### Right Panel (Preset Controls)
-- Mode-specific controls
-- Recede slider + button
-- Per-preset Adjust sliders
-- Reference Image Library with thumbnails + management
-
-### Settings Tab
-- ComfyUI config, toggles, saved profiles
-
-### Bottom Bar
-- Active preset + mode indicator
-- Render All button
-- Export button + path
-- Progress bar
-
-### Editor Overlay (Modal)
-- Opens on image click
-- Adjust + Crop tabs
-- Before/After, navigation, apply/reset/export buttons
+### Setting Styles (RIL Category)
+Toggle pills to manage active Setting Style categories:
+Invisible / Prong / Bezel / Channel / Pave / Tension / + Add
 
 ---
 
-## Data Persistence
+## Not Yet Implemented (Needs Wiring)
 
-All data lives locally on the Mac Mini. Nothing syncs to cloud.
-
-```
-~/JewelRender/
-├── presets/
-│   ├── cool-blue/
-│   │   ├── config.json          # Preset metadata & settings
-│   │   ├── library/             # Reference Image Library
-│   │   │   ├── ref1.jpg
-│   │   │   └── ref2.jpg
-│   │   ├── renders/             # Generated images
-│   │   │   └── *.jpg
-│   │   └── feedback.json        # +/− log for this preset
-│   ├── white-retail/
-│   └── yashica-film/
-├── exports/                     # User-configured export folder
-│   └── *.jpg
-└── feedback_log.json            # Global parameter logging
-```
-
----
-
-## Not Yet Implemented
-
+- Wire to ComfyUI API (127.0.0.1:8188)
 - Real drag-and-drop file handling
-- Batch processing queue with actual progress tracking
-- Mobile responsive layout for iPhone
-- PWA manifest for home screen app experience
-- Saved profiles functionality
-- LoRA fine-tuning from approved sets
-- Video model testing on Apple Silicon
+- Cross-preset pipeline
+- RIL persistence backend (local folder structure)
+- RIL search functionality
+- Upload Centre drag-to-folder
+- AI-suggested sorting
+- Batch processing with real progress
+- Rotating Video (SV3D_p / WAN 2.1)
+- Wire live sliders to CSS filters / image processing
+- Wire amendments prompt to img2img
+- Wire brush tool to inpainting
+- Wire material swaps to selective regeneration
+- Multi-angle view generation
+- Export auto-filing to multiple RIL folders
+- Mobile responsive for iPhone
+- PWA manifest
 
-See `PROGRESS.md` for implementation roadmap.
+See `JEWELRENDER_SPEC_v4.md` for the authoritative spec.
