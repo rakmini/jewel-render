@@ -81,3 +81,4 @@ build/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.vercel

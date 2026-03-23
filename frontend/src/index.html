@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>JewelRender</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ================================================================ -->
+    <!-- HEADER -->
+    <!-- ================================================================ -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">JewelRender</h1>
+        <span class="tagline">Batch Jewelry Rendering</span>
+      </div>
+      <div class="header-right">
+        <span class="connection-status" id="connectionStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Disconnected</span>
+        </span>
+        <button class="btn-icon" id="settingsBtn" title="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================================================================ -->
+    <!-- PRESET TABS -->
+    <!-- ================================================================ -->
+    <nav class="preset-tabs" id="presetTabs">
+      <!-- Tabs injected by JS -->
+      <button class="preset-tab-add" id="addPresetBtn" title="Add preset">+</button>
+    </nav>
+
+    <!-- ================================================================ -->
+    <!-- MODE SWITCHER -->
+    <!-- ================================================================ -->
+    <div class="mode-switcher" id="modeSwitcher">
+      <button class="mode-pill active" data-mode="edit">Edit</button>
+      <button class="mode-pill" data-mode="generate">Generate</button>
+      <button class="mode-pill" data-mode="video">360 Video</button>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- MAIN WORKSPACE -->
+    <!-- ================================================================ -->
+    <main class="workspace">
+
+      <!-- LEFT PANEL: Image Queue -->
+      <section class="panel panel-left" id="queuePanel">
+        <div class="panel-header">
+          <h2>Queue</h2>
+          <span class="queue-count" id="queueCount">0 images</span>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p>Drop images here</p>
+          <span class="drop-hint">or click to browse</span>
+          <input type="file" id="fileInput" accept="image/*" multiple hidden>
+        </div>
+
+        <div class="queue-list" id="queueList">
+          <!-- Queue items injected by JS -->
+        </div>
+
+        <div class="queue-stats" id="queueStats">
+          <span class="stat approved">0 approved</span>
+          <span class="stat rejected">0 rejected</span>
+        </div>
+      </section>
+
+      <!-- CENTER: Preview Area -->
+      <section class="panel panel-center" id="previewPanel">
+        <div class="preview-area" id="previewArea">
+          <div class="preview-empty" id="previewEmpty">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <p>Select an image or start a render</p>
+          </div>
+          <img id="previewImage" class="preview-image hidden" alt="Preview">
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: Controls -->
+      <section class="panel panel-right" id="controlsPanel">
+
+        <!-- MODE: Edit Controls -->
+        <div class="mode-controls" id="editControls">
+          <div class="control-group">
+            <h3>Elements to Change</h3>
+            <div class="checkbox-group">
+              <label class="checkbox"><input type="checkbox" name="element" value="background" checked><span>Background</span></label>
+              <label class="checkbox"><input type="checkbox" name="element" value="metal"><span>Metal</span></label>
+              <label class="checkbox"><input type="checkbox" name="element" value="stone"><span>Stone</span></label>
+              <label class="checkbox"><input type="checkbox" name="element" value="reflection"><span>Reflection</span></label>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3>Recede</h3>
+            <div class="recede-control">
+              <input type="range" id="recedeSlider" min="0" max="50" value="0" class="slider">
+              <div class="recede-row">
+                <span class="recede-value" id="recedeValue">0%</span>
+                <button class="btn btn-secondary" id="recedeBtn" disabled>Recede</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE: Generate Controls -->
+        <div class="mode-controls hidden" id="generateControls">
+          <div class="control-group">
+            <h3>Prompt</h3>
+            <textarea id="promptInput" class="prompt-input" rows="4" placeholder="Describe the jewelry image you want to generate..."></textarea>
+          </div>
+          <div class="control-group">
+            <h3>Reference Images</h3>
+            <div class="ril-drop-zone" id="refDropZone">
+              <span>+ Add references</span>
+            </div>
+            <div class="ref-thumbs" id="refThumbs"></div>
+          </div>
+        </div>
+
+        <!-- MODE: Video Controls -->
+        <div class="mode-controls hidden" id="videoControls">
+          <div class="control-group">
+            <h3>Key Angles</h3>
+            <div class="angle-uploads">
+              <div class="angle-slot" data-angle="front">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <span>Front</span>
+              </div>
+              <div class="angle-slot" data-angle="side">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <span>Side</span>
+              </div>
+              <div class="angle-slot" data-angle="three-quarter">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <span>3/4 View</span>
+              </div>
+            </div>
+          </div>
+          <div class="control-group">
+            <h3>Rotation</h3>
+            <div class="select-group">
+              <label>Direction
+                <select id="rotationDirection">
+                  <option value="clockwise">Clockwise</option>
+                  <option value="counter-clockwise">Counter-clockwise</option>
+                </select>
+              </label>
+              <label>Speed
+                <select id="rotationSpeed">
+                  <option value="slow">Slow</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="fast">Fast</option>
+                </select>
+              </label>
+              <label>Length
+                <select id="videoLength">
+                  <option value="3">3 seconds</option>
+                  <option value="5" selected>5 seconds</option>
+                  <option value="8">8 seconds</option>
+                  <option value="10">10 seconds</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRESET ADJUST SLIDERS (always visible) -->
+        <div class="control-group preset-adjusts">
+          <h3>Preset Adjustments</h3>
+          <div class="slider-group">
+            <label><span>Temperature</span><span class="slider-val" data-slider="temperature">0</span></label>
+            <input type="range" class="slider" data-param="temperature" min="-100" max="100" value="0">
+          </div>
+          <div class="slider-group">
+            <label><span>Saturation</span><span class="slider-val" data-slider="saturation">0</span></label>
+            <input type="range" class="slider" data-param="saturation" min="-100" max="100" value="0">
+          </div>
+          <div class="slider-group">
+            <label><span>Contrast</span><span class="slider-val" data-slider="contrast">0</span></label>
+            <input type="range" class="slider" data-param="contrast" min="-100" max="100" value="0">
+          </div>
+          <div class="slider-group">
+            <label><span>Sharpness</span><span class="slider-val" data-slider="sharpness">0</span></label>
+            <input type="range" class="slider" data-param="sharpness" min="-100" max="100" value="0">
+          </div>
+          <div class="slider-group">
+            <label><span>Grain</span><span class="slider-val" data-slider="grain">0</span></label>
+            <input type="range" class="slider" data-param="grain" min="-100" max="100" value="0">
+          </div>
+        </div>
+
+        <!-- REFERENCE IMAGE LIBRARY -->
+        <div class="control-group ril-section">
+          <div class="ril-header">
+            <h3>Reference Library</h3>
+            <span class="ril-count" id="rilCount">0</span>
+          </div>
+          <div class="ril-drop-zone" id="rilDropZone">
+            <span>+ Add to library</span>
+          </div>
+          <div class="ril-grid" id="rilGrid">
+            <!-- RIL thumbnails injected by JS -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================================================================ -->
+    <!-- BOTTOM BAR -->
+    <!-- ================================================================ -->
+    <footer class="bottom-bar">
+      <div class="bar-left">
+        <span class="active-context" id="activeContext">Cool Blue / Edit</span>
+      </div>
+      <div class="bar-center">
+        <div class="progress-bar hidden" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+          <span class="progress-text" id="progressText">0%</span>
+        </div>
+      </div>
+      <div class="bar-right">
+        <button class="btn btn-primary" id="renderAllBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Render All
+        </button>
+        <button class="btn btn-secondary" id="exportBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+          <span class="export-count" id="exportCount"></span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- ================================================================ -->
+    <!-- EDITOR OVERLAY -->
+    <!-- ================================================================ -->
+    <div class="editor-overlay hidden" id="editorOverlay">
+      <div class="editor-container">
+        <div class="editor-header">
+          <div class="editor-tabs">
+            <button class="editor-tab active" data-tab="adjust">Adjust</button>
+            <button class="editor-tab" data-tab="crop">Crop</button>
+          </div>
+          <div class="editor-actions-top">
+            <button class="btn-icon" id="editorCompare" title="Before/After">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+            </button>
+            <button class="btn-icon" id="editorClose" title="Close">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-body">
+          <div class="editor-preview">
+            <button class="editor-nav editor-prev" id="editorPrev">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <img id="editorImage" class="editor-image" alt="Editor preview">
+            <button class="editor-nav editor-next" id="editorNext">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+
+          <div class="editor-controls">
+            <!-- ADJUST TAB -->
+            <div class="editor-panel" id="adjustPanel">
+              <div class="editor-section">
+                <h4>Light</h4>
+                <div class="slider-group"><label><span>Exposure</span><span class="slider-val" data-editor="exposure">0</span></label><input type="range" class="slider" data-adjust="exposure" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Contrast</span><span class="slider-val" data-editor="contrast">0</span></label><input type="range" class="slider" data-adjust="contrast" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Highlights</span><span class="slider-val" data-editor="highlights">0</span></label><input type="range" class="slider" data-adjust="highlights" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Shadows</span><span class="slider-val" data-editor="shadows">0</span></label><input type="range" class="slider" data-adjust="shadows" min="-100" max="100" value="0"></div>
+              </div>
+              <div class="editor-section">
+                <h4>Color</h4>
+                <div class="slider-group"><label><span>Temperature</span><span class="slider-val" data-editor="temperature">0</span></label><input type="range" class="slider" data-adjust="temperature" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Tint</span><span class="slider-val" data-editor="tint">0</span></label><input type="range" class="slider" data-adjust="tint" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Saturation</span><span class="slider-val" data-editor="saturation">0</span></label><input type="range" class="slider" data-adjust="saturation" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Vibrance</span><span class="slider-val" data-editor="vibrance">0</span></label><input type="range" class="slider" data-adjust="vibrance" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Skin Tone</span><span class="slider-val" data-editor="skinTone">0</span></label><input type="range" class="slider" data-adjust="skinTone" min="-100" max="100" value="0"></div>
+              </div>
+              <div class="editor-section">
+                <h4>Detail</h4>
+                <div class="slider-group"><label><span>Sharpness</span><span class="slider-val" data-editor="sharpness">0</span></label><input type="range" class="slider" data-adjust="sharpness" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Clarity</span><span class="slider-val" data-editor="clarity">0</span></label><input type="range" class="slider" data-adjust="clarity" min="-100" max="100" value="0"></div>
+              </div>
+              <div class="editor-section">
+                <h4>Film</h4>
+                <div class="slider-group"><label><span>Grain</span><span class="slider-val" data-editor="grain">0</span></label><input type="range" class="slider" data-adjust="grain" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Fade</span><span class="slider-val" data-editor="fade">0</span></label><input type="range" class="slider" data-adjust="fade" min="-100" max="100" value="0"></div>
+                <div class="slider-group"><label><span>Vignette</span><span class="slider-val" data-editor="vignette">0</span></label><input type="range" class="slider" data-adjust="vignette" min="-100" max="100" value="0"></div>
+              </div>
+            </div>
+
+            <!-- CROP TAB -->
+            <div class="editor-panel hidden" id="cropPanel">
+              <div class="editor-section">
+                <h4>Aspect Ratio</h4>
+                <div class="aspect-pills">
+                  <button class="aspect-pill active" data-ratio="free">Free</button>
+                  <button class="aspect-pill" data-ratio="1:1">1:1</button>
+                  <button class="aspect-pill" data-ratio="4:5">4:5</button>
+                  <button class="aspect-pill" data-ratio="9:16">9:16</button>
+                  <button class="aspect-pill" data-ratio="16:9">16:9</button>
+                </div>
+              </div>
+              <div class="editor-section">
+                <h4>Straighten</h4>
+                <div class="slider-group">
+                  <label><span>Angle</span><span class="slider-val" data-editor="straighten">0°</span></label>
+                  <input type="range" class="slider" data-adjust="straighten" min="-45" max="45" value="0">
+                </div>
+              </div>
+              <div class="editor-section">
+                <h4>Transform</h4>
+                <div class="transform-btns">
+                  <button class="btn btn-small" id="rotateLeftBtn" title="Rotate left">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    Rotate L
+                  </button>
+                  <button class="btn btn-small" id="rotateRightBtn" title="Rotate right">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    Rotate R
+                  </button>
+                  <button class="btn btn-small" id="flipHBtn" title="Flip horizontal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                    Flip H
+                  </button>
+                  <button class="btn btn-small" id="flipVBtn" title="Flip vertical">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 3 3 3 3 8"/><line x1="20" y1="20" x2="3" y2="3"/><polyline points="3 16 3 21 8 21"/><line x1="9" y1="15" x2="3" y2="21"/><line x1="20" y1="4" x2="15" y2="9"/></svg>
+                    Flip V
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-footer">
+          <button class="btn btn-ghost" id="editorReset">Reset All</button>
+          <div class="editor-footer-right">
+            <button class="btn btn-secondary" id="editorApply">Apply</button>
+            <button class="btn btn-primary" id="editorExport">Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- SETTINGS OVERLAY -->
+    <!-- ================================================================ -->
+    <div class="settings-overlay hidden" id="settingsOverlay">
+      <div class="settings-container">
+        <div class="settings-header">
+          <h2>Settings</h2>
+          <button class="btn-icon" id="settingsClose">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="settings-body">
+          <div class="settings-section">
+            <h3>ComfyUI Connection</h3>
+            <div class="form-row">
+              <label>Host <input type="text" id="settingsHost" value="127.0.0.1"></label>
+              <label>Port <input type="number" id="settingsPort" value="8188"></label>
+            </div>
+            <button class="btn btn-secondary" id="testConnectionBtn">Test Connection</button>
+            <span class="connection-result" id="connectionResult"></span>
+          </div>
+          <div class="settings-section">
+            <h3>Checkpoint</h3>
+            <select id="settingsCheckpoint" class="full-width">
+              <option value="sd_xl_base_1.0.safetensors">sd_xl_base_1.0.safetensors</option>
+            </select>
+          </div>
+          <div class="settings-section">
+            <h3>Output</h3>
+            <div class="form-row info-row">
+              <span>Dimensions: 1170 x 2532</span>
+              <span>JPEG Quality: 95</span>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>Video</h3>
+            <div class="form-row">
+              <label>Model
+                <select id="settingsVideoModel">
+                  <option value="sv3d_p">SV3D_p</option>
+                  <option value="wan_2_1">WAN 2.1</option>
+                </select>
+              </label>
+              <label>Format <input type="text" value="MP4" disabled></label>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3>Feedback & Training</h3>
+            <label class="toggle-row">
+              <span>Auto-add approved to RIL</span>
+              <input type="checkbox" id="settingsAutoApprove" checked class="toggle">
+            </label>
+            <label class="toggle-row">
+              <span>Auto-deposit exports to RIL</span>
+              <input type="checkbox" id="settingsAutoDeposit" checked class="toggle">
+            </label>
+            <label class="toggle-row">
+              <span>Parameter logging</span>
+              <input type="checkbox" id="settingsParamLogging" checked class="toggle">
+            </label>
+          </div>
+          <div class="settings-section">
+            <h3>Export Folder</h3>
+            <div class="export-path-row">
+              <input type="text" id="settingsExportPath" value="~/JewelRender/exports/" class="full-width">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- NEW PRESET MODAL -->
+    <!-- ================================================================ -->
+    <div class="modal-overlay hidden" id="newPresetModal">
+      <div class="modal">
+        <h3>New Preset</h3>
+        <div class="form-row">
+          <label>Name <input type="text" id="newPresetName" placeholder="e.g. Soft Pink"></label>
+        </div>
+        <div class="form-row">
+          <label>Style Description <input type="text" id="newPresetStyle" placeholder="e.g. soft pink background, warm lighting"></label>
+        </div>
+        <div class="form-row">
+          <label>Copy from
+            <select id="newPresetTemplate">
+              <option value="">None (blank defaults)</option>
+            </select>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="newPresetCancel">Cancel</button>
+          <button class="btn btn-primary" id="newPresetCreate">Create</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- PRESET CONTEXT MENU -->
+    <!-- ================================================================ -->
+    <div class="context-menu hidden" id="presetContextMenu">
+      <button class="context-item" data-action="rename">Rename</button>
+      <button class="context-item" data-action="duplicate">Duplicate</button>
+      <button class="context-item context-danger" data-action="delete">Delete</button>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>JewelRender — Cool Blue Metal Swap</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* MVP overrides — single-column scrollable layout */
+    body { overflow-y: auto; overflow-x: hidden; }
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 0 var(--sp-lg);
+    }
+
+    .mvp-header {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding: var(--sp-lg) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mvp-header .logo { font-size: 18px; font-weight: 700; }
+    .mvp-header .tagline { color: var(--text-dim); font-size: 12px; }
+
+    .mvp-section {
+      padding: var(--sp-xl) 0;
+    }
+    .mvp-section h3 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: var(--sp-md);
+    }
+
+    /* Upload zone */
+    .mvp-drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-2xl) var(--sp-xl);
+      text-align: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-sm);
+    }
+    .mvp-drop-zone:hover, .mvp-drop-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .mvp-drop-zone.has-image {
+      padding: var(--sp-sm);
+      border-style: solid;
+      border-color: var(--border-light);
+    }
+    .mvp-drop-zone img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--radius-md);
+      object-fit: contain;
+    }
+    .mvp-drop-zone .drop-label { font-size: 13px; }
+    .mvp-drop-zone .drop-hint { font-size: 11px; color: var(--text-muted); }
+    .mvp-drop-zone .change-btn {
+      position: absolute;
+      top: var(--sp-sm);
+      right: var(--sp-sm);
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+    }
+    .mvp-drop-zone .change-btn:hover { background: var(--bg-hover); color: var(--text); }
+
+    /* Metal pills */
+    .metal-pills {
+      display: flex;
+      gap: var(--sp-sm);
+    }
+    .metal-pill {
+      flex: 1;
+      padding: var(--sp-md) var(--sp-lg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      background: var(--bg-raised);
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .metal-pill:hover { background: var(--bg-hover); color: var(--text); }
+    .metal-pill.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Render button */
+    .mvp-render-btn {
+      width: 100%;
+      padding: var(--sp-lg);
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .mvp-render-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .mvp-render-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Loading state */
+    .mvp-render-btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    @keyframes pulse { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+    .mvp-render-btn.loading { animation: pulse 1.5s ease-in-out infinite; }
+
+    /* Error */
+    .mvp-error {
+      color: var(--red);
+      font-size: 12px;
+      margin-top: var(--sp-sm);
+      min-height: 18px;
+    }
+
+    /* Result */
+    .mvp-result {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--bg-raised);
+    }
+    .mvp-result.visible { display: block; }
+    .mvp-result img {
+      width: 100%;
+      display: block;
+    }
+    .mvp-result-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-md) var(--sp-lg);
+      border-top: 1px solid var(--border);
+    }
+    .mvp-result-bar .prompt-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      flex: 1;
+      margin-right: var(--sp-md);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mvp-download-btn {
+      padding: var(--sp-sm) var(--sp-lg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      background: var(--bg-panel);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .mvp-download-btn:hover { background: var(--bg-hover); }
+
+    /* Side-by-side on wider screens */
+    .mvp-compare {
+      display: none;
+      gap: var(--sp-md);
+      margin-top: var(--sp-md);
+    }
+    .mvp-compare.visible { display: grid; grid-template-columns: 1fr 1fr; }
+    .mvp-compare .compare-panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--bg-raised);
+    }
+    .mvp-compare .compare-panel img {
+      width: 100%;
+      display: block;
+    }
+    .mvp-compare .compare-label {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: var(--sp-sm) 0;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Footer spacer */
+    .mvp-footer { padding: var(--sp-2xl) 0; text-align: center; }
+    .mvp-footer a { color: var(--text-muted); font-size: 11px; text-decoration: none; }
+    .mvp-footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Header -->
+    <div class="mvp-header">
+      <span class="logo">JewelRender</span>
+      <span class="tagline">Cool Blue Metal Swap</span>
+    </div>
+
+    <!-- Upload -->
+    <div class="mvp-section">
+      <h3>Upload Jewelry Photo</h3>
+      <div class="mvp-drop-zone" id="dropZone">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span class="drop-label">Drop image here</span>
+        <span class="drop-hint">or click to browse · JPG, PNG, WebP</span>
+      </div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+    </div>
+
+    <!-- Metal Type -->
+    <div class="mvp-section">
+      <h3>Metal Type</h3>
+      <div class="metal-pills" id="metalPills">
+        <button class="metal-pill active" data-metal="yellow">Yellow Gold</button>
+        <button class="metal-pill" data-metal="white">White Gold</button>
+        <button class="metal-pill" data-metal="rose">Rose Gold</button>
+      </div>
+    </div>
+
+    <!-- Render -->
+    <div class="mvp-section">
+      <button class="mvp-render-btn" id="renderBtn" disabled>Render</button>
+      <div class="mvp-error" id="errorMsg"></div>
+    </div>
+
+    <!-- Result -->
+    <div class="mvp-section">
+      <h3>Result</h3>
+      <div class="mvp-compare" id="compareView">
+        <div class="compare-panel">
+          <img id="originalImg" alt="Original">
+          <div class="compare-label">Original</div>
+        </div>
+        <div class="compare-panel">
+          <img id="resultImg" alt="Result">
+          <div class="compare-label">Rendered</div>
+        </div>
+      </div>
+      <div class="mvp-result" id="resultPanel">
+        <img id="resultImgSingle" alt="Result">
+        <div class="mvp-result-bar">
+          <span class="prompt-text" id="promptText"></span>
+          <a class="mvp-download-btn" id="downloadBtn" download>Download</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mvp-footer">
+      <a href="/">← Full UI</a>
+    </div>
+
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    const $ = (s) => document.querySelector(s);
+    const dropZone = $('#dropZone');
+    const fileInput = $('#fileInput');
+    const renderBtn = $('#renderBtn');
+    const errorMsg = $('#errorMsg');
+    const resultPanel = $('#resultPanel');
+    const compareView = $('#compareView');
+    const metalPills = $('#metalPills');
+
+    let selectedFile = null;
+    let selectedMetal = 'yellow';
+    let uploadedObjectUrl = null;
+
+    // ---- Drop Zone ----
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) setFile(fileInput.files[0]);
+    });
+
+    ['dragenter', 'dragover'].forEach(e => {
+      dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.add('drag-over'); });
+    });
+    ['dragleave', 'drop'].forEach(e => {
+      dropZone.addEventListener(e, () => dropZone.classList.remove('drag-over'));
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) setFile(file);
+    });
+
+    function setFile(file) {
+      selectedFile = file;
+      if (uploadedObjectUrl) URL.revokeObjectURL(uploadedObjectUrl);
+      uploadedObjectUrl = URL.createObjectURL(file);
+
+      dropZone.innerHTML = `
+        <img src="${uploadedObjectUrl}" alt="Uploaded">
+        <button class="change-btn" onclick="event.stopPropagation();" id="changeBtn">Change</button>
+      `;
+      dropZone.classList.add('has-image');
+      $('#changeBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+
+      renderBtn.disabled = false;
+      errorMsg.textContent = '';
+      resultPanel.classList.remove('visible');
+      compareView.classList.remove('visible');
+    }
+
+    // ---- Metal Selection ----
+    metalPills.addEventListener('click', (e) => {
+      const pill = e.target.closest('.metal-pill');
+      if (!pill) return;
+      metalPills.querySelectorAll('.metal-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedMetal = pill.dataset.metal;
+    });
+
+    // ---- Render ----
+    renderBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+
+      renderBtn.disabled = true;
+      renderBtn.classList.add('loading');
+      renderBtn.textContent = 'Rendering…';
+      errorMsg.textContent = '';
+      resultPanel.classList.remove('visible');
+      compareView.classList.remove('visible');
+
+      const form = new FormData();
+      form.append('file', selectedFile);
+      form.append('metal', selectedMetal);
+
+      try {
+        const res = await fetch('/api/edit', { method: 'POST', body: form });
+        const data = await res.json();
+
+        if (!res.ok) {
+          const msg = data.detail?.error || data.error || data.detail || 'Unknown error';
+          throw new Error(msg);
+        }
+
+        // Build image src from base64 data
+        const imgSrc = 'data:image/png;base64,' + data.image_data;
+
+        // Create downloadable blob
+        const byteChars = atob(data.image_data);
+        const byteArr = new Uint8Array(byteChars.length);
+        for (let i = 0; i < byteChars.length; i++) byteArr[i] = byteChars.charCodeAt(i);
+        const blob = new Blob([byteArr], { type: 'image/png' });
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Show compare view
+        $('#originalImg').src = uploadedObjectUrl;
+        $('#resultImg').src = imgSrc;
+        compareView.classList.add('visible');
+
+        // Also fill single result panel
+        $('#resultImgSingle').src = imgSrc;
+        $('#promptText').textContent = data.prompt;
+        $('#downloadBtn').href = blobUrl;
+        $('#downloadBtn').download = data.filename || 'render.png';
+        resultPanel.classList.add('visible');
+
+      } catch (err) {
+        errorMsg.textContent = err.message;
+      } finally {
+        renderBtn.disabled = false;
+        renderBtn.classList.remove('loading');
+        renderBtn.textContent = 'Render';
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
