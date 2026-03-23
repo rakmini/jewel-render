@@ -57,7 +57,8 @@ async def edit_image(image_bytes: bytes, prompt: str) -> bytes:
 
     response = await client.images.edit(
         model=FAL_MODEL,
-        image=io.BytesIO(png_bytes),
+        # Explicit filename + MIME type prevents application/octet-stream on upload
+        image=('image.png', png_bytes, 'image/png'),
         prompt=prompt,
         size=FAL_IMAGE_SIZE,
         response_format='b64_json',
