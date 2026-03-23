@@ -3,7 +3,7 @@ fastapi>=0.104.1
 uvicorn[standard]>=0.24.0
 python-multipart>=0.0.6
 
-# OpenAI
+# OpenAI SDK — used as HTTP client for Fal.AI's OpenAI-compatible API
 openai>=1.0
 
 # Image Processing

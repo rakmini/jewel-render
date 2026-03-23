@@ -1,7 +1,7 @@
 """JewelRender API Server
 
 MVP: Upload jewelry photo → pick metal type → AI edits image.
-Backend: FastAPI + OpenAI Images API
+Backend: FastAPI + Fal.AI Images API (OpenAI-compatible)
 Works locally and on Vercel serverless.
 """
 
@@ -20,7 +20,7 @@ from config import (
     API_HOST, API_PORT, API_DEBUG, CORS_ORIGINS,
     USER_DATA_DIR, RENDERS_DIR, LOG_LEVEL, IS_VERCEL,
 )
-from openai_client import edit_image, test_api_key
+from fal_client import edit_image, test_api_key
 
 # ============================================================================
 # Logging
@@ -125,7 +125,7 @@ async def edit_jewelry(
     # Build prompt
     prompt = PROMPT_TEMPLATE.format(metal=metal)
 
-    # Call OpenAI
+    # Call Fal.AI
     try:
         result_bytes = await edit_image(image_bytes, prompt)
     except Exception as e:
@@ -134,15 +134,15 @@ async def edit_jewelry(
 
         if 'authentication' in error_msg.lower() or '401' in error_msg:
             code = 'INVALID_KEY'
-            error_msg = 'Invalid OpenAI API key. Check your .env file.'
+            error_msg = 'Invalid Fal.AI API key. Check your .env file.'
         elif 'rate' in error_msg.lower() or '429' in error_msg:
             code = 'RATE_LIMIT'
-            error_msg = 'Rate limited by OpenAI. Please wait and try again.'
+            error_msg = 'Rate limited by Fal.AI. Please wait and try again.'
         elif 'content_policy' in error_msg.lower() or 'safety' in error_msg.lower():
             code = 'CONTENT_POLICY'
             error_msg = 'Image was rejected by content policy.'
 
-        logger.error(f'OpenAI edit failed: {e}', exc_info=True)
+        logger.error(f'Fal.AI edit failed: {e}', exc_info=True)
         raise HTTPException(
             status_code=502,
             detail={'error': error_msg, 'code': code},
@@ -172,12 +172,18 @@ async def edit_jewelry(
 # API Key Test
 # ============================================================================
 
-@app.get('/api/openai/test')
-async def test_openai():
+@app.get('/api/fal/test')
+async def test_fal():
     ok = await test_api_key()
     if ok:
-        return {'status': 'ok', 'message': 'API key is valid'}
-    raise HTTPException(status_code=401, detail={'error': 'Invalid API key', 'code': 'INVALID_KEY'})
+        return {'status': 'ok', 'message': 'Fal.AI API key is valid'}
+    raise HTTPException(status_code=401, detail={'error': 'Invalid Fal.AI API key', 'code': 'INVALID_KEY'})
+
+
+# Backward-compatible alias
+@app.get('/api/openai/test')
+async def test_openai():
+    return await test_fal()
 
 # ============================================================================
 # Static Files — local only (Vercel serves static via CDN)

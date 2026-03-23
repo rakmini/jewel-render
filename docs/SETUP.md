@@ -107,34 +107,33 @@ pip install fastapi uvicorn requests pillow python-dotenv pydantic
 Create `backend/config.py`:
 ```python
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# ComfyUI Connection
-COMFYUI_HOST = os.getenv('COMFYUI_HOST', '127.0.0.1')
-COMFYUI_PORT = os.getenv('COMFYUI_PORT', '8188')
-COMFYUI_URL = f'http://{COMFYUI_HOST}:{COMFYUI_PORT}'
-
-# Output Settings
-OUTPUT_WIDTH = 1170
-OUTPUT_HEIGHT = 2532
-JPEG_QUALITY = 95
+# Fal.AI
+FAL_API_KEY = os.getenv('FAL_API_KEY', '')
 
 # Storage
-USER_DATA_DIR = os.path.expanduser('~/JewelRender')
-PRESETS_DIR = os.path.join(USER_DATA_DIR, 'presets')
-EXPORTS_DIR = os.path.join(USER_DATA_DIR, 'exports')
+USER_DATA_DIR = Path.home() / 'JewelRender'
+PRESETS_DIR = USER_DATA_DIR / 'presets'
+EXPORTS_DIR = USER_DATA_DIR / 'exports'
+RENDERS_DIR = USER_DATA_DIR / 'renders'
 
-# Create dirs if not exist
-os.makedirs(PRESETS_DIR, exist_ok=True)
-os.makedirs(EXPORTS_DIR, exist_ok=True)
+for d in (USER_DATA_DIR, PRESETS_DIR, EXPORTS_DIR, RENDERS_DIR):
+    d.mkdir(exist_ok=True)
 ```
 
-Create `.env` file:
+Create `.env` file (copy from `backend/.env.example`):
 ```
-COMFYUI_HOST=127.0.0.1
-COMFYUI_PORT=8188
+FAL_API_KEY=your-fal-ai-key-here
+
+# API Server
+API_HOST=0.0.0.0
+API_PORT=5050
+API_DEBUG=false
+LOG_LEVEL=INFO
 ```
 
 #### 4. Create Entry Point

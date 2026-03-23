@@ -14,10 +14,17 @@ load_dotenv()
 IS_VERCEL = bool(os.environ.get('VERCEL'))
 
 # ============================================================================
-# OpenAI
+# Fal.AI (uses OpenAI-compatible API)
+# Falls back to OPENAI_API_KEY for backward compatibility.
 # ============================================================================
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+FAL_API_KEY = os.getenv('FAL_API_KEY') or os.getenv('OPENAI_API_KEY', '')
+FAL_BASE_URL = os.getenv('FAL_BASE_URL', 'https://fal.run/v1')
+FAL_MODEL = os.getenv('FAL_MODEL', 'fal-ai/gpt-image-1')
+FAL_IMAGE_SIZE = os.getenv('FAL_IMAGE_SIZE', '1024x1024')
+
+# Keep original name available for any legacy imports
+OPENAI_API_KEY = FAL_API_KEY
 
 # ============================================================================
 # Storage Paths

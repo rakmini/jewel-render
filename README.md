@@ -54,8 +54,9 @@ jewelrender/
    ```
 
 2. **Configure**
-   - Copy `config/settings.json.example` to `config/settings.json`
-   - Update ComfyUI host/port (default: `127.0.0.1:8188`)
+   - Copy `backend/.env.example` to `backend/.env`
+   - Set your Fal.AI API key: `FAL_API_KEY=your-key-here` (get one at [fal.ai](https://fal.ai))
+   - Update `API_HOST`/`API_PORT` if needed (default: `0.0.0.0:5050`)
 
 3. **Run backend**
    ```bash
@@ -70,7 +71,7 @@ jewelrender/
 
 - **Frontend**: HTML5, CSS3, vanilla JavaScript (single-file, no framework)
 - **Backend**: Python 3.10+, FastAPI/Flask
-- **AI**: ComfyUI (Mac Mini M4), SDXL base 1.0
+- **AI**: [Fal.AI](https://fal.ai) image generation & editing API
 - **Output**: JPEG 95 quality, 1170×2532 (iPhone portrait)
 - **Video**: MP4, SV3D_p / WAN 2.1 models
 
