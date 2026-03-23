@@ -1,9 +1,10 @@
 {
-  "comfyui": {
-    "host": "127.0.0.1",
-    "port": 8188,
-    "checkpoint": "sd_xl_base_1.0.safetensors",
-    "timeout_seconds": 600
+  "openai": {
+    "brain_model": "gpt-4.1-mini",
+    "image_model": "gpt-image-1",
+    "video_model": "sora-2",
+    "timeout_seconds": 120,
+    "video_timeout_seconds": 600
   },
   "output": {
     "width": 1170,
@@ -13,7 +14,6 @@
   },
   "video": {
     "format": "mp4",
-    "model": "sv3d_p",
     "codec": "h264",
     "bitrate": "5000k"
   },

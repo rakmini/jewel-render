@@ -1,6 +1,7 @@
 """Data Models for JewelRender API
 
 Pydantic models for request/response validation.
+AI Engine: OpenAI APIs (GPT-4.1-mini brain, GPT Image 1.5, Sora 2)
 """
 
 from typing import Optional, List, Dict, Any
@@ -83,15 +84,16 @@ class RenderParams(BaseModel):
     preset_id: str
     mode: RenderMode
 
-    # Generation mode
+    # Generation mode — sent to OpenAI /v1/images/generations
     prompt: Optional[str] = None
     reference_images: Optional[List[str]] = None
 
-    # Edit mode
+    # Edit mode — sent to OpenAI /v1/images/edits
     input_image: Optional[str] = None  # base64 or file
+    mask: Optional[str] = None  # base64 mask for targeted edits
     elements_to_change: Optional[List[str]] = None
 
-    # Video mode
+    # Video mode — sent to Sora 2 /v1/videos
     front_image: Optional[str] = None
     side_image: Optional[str] = None
     three_quarter_image: Optional[str] = None
@@ -99,7 +101,7 @@ class RenderParams(BaseModel):
     rotation_speed: Optional[str] = 'normal'
     video_length_seconds: Optional[int] = 5
 
-    # Adjustments
+    # Adjustments (applied post-render via Pillow)
     temperature: int = 0
     saturation: int = 0
     contrast: int = 0
@@ -177,6 +179,24 @@ class ImageFeedback(BaseModel):
 
 
 # ============================================================================
+# AI Brain Models (GPT-4.1-mini vision analysis)
+# ============================================================================
+
+class ImageAnalysis(BaseModel):
+    """Result from AI brain analyzing an image."""
+    metal_type: Optional[str] = None  # e.g. 'white gold', 'yellow gold', 'rose gold'
+    metal_karat: Optional[str] = None  # e.g. '10k', '14k', '18k'
+    gemstone: Optional[str] = None  # e.g. 'diamond', 'emerald', 'sapphire'
+    gemstone_color: Optional[str] = None
+    product_type: Optional[str] = None  # e.g. 'ring', 'necklace', 'bracelet'
+    setting_style: Optional[str] = None  # e.g. 'prong', 'bezel', 'pave'
+    quality_score: Optional[float] = Field(default=None, ge=0, le=1)
+    suggested_preset: Optional[str] = None
+    suggested_ril_folders: Optional[List[str]] = None
+    description: Optional[str] = None
+
+
+# ============================================================================
 # Reference Image Library (RIL)
 # ============================================================================
 
@@ -187,6 +207,7 @@ class RILImage(BaseModel):
     added_date: datetime
     source: str  # 'manual', 'approved', 'export'
     url: str
+    analysis: Optional[ImageAnalysis] = None  # AI brain classification
 
 
 class RILUpload(BaseModel):
@@ -199,12 +220,13 @@ class RILUpload(BaseModel):
 # Settings Models
 # ============================================================================
 
-class ComfyUISettings(BaseModel):
-    """ComfyUI connection settings."""
-    host: str = '127.0.0.1'
-    port: int = 8188
-    checkpoint: str = 'sd_xl_base_1.0.safetensors'
-    timeout_seconds: int = 600
+class OpenAISettings(BaseModel):
+    """OpenAI API connection settings."""
+    brain_model: str = 'gpt-4.1-mini'
+    image_model: str = 'gpt-image-1'
+    video_model: str = 'sora-2'
+    timeout_seconds: int = 120
+    video_timeout_seconds: int = 600
 
 
 class OutputSettings(BaseModel):
@@ -217,7 +239,6 @@ class OutputSettings(BaseModel):
 class VideoSettings(BaseModel):
     """Video output settings."""
     format: str = 'mp4'
-    model: str = 'sv3d_p'
     codec: str = 'h264'
     bitrate: str = '5000k'
 
@@ -231,7 +252,7 @@ class FeedbackSettings(BaseModel):
 
 class Settings(BaseModel):
     """Application settings."""
-    comfyui: ComfyUISettings
+    openai: OpenAISettings
     output: OutputSettings
     video: VideoSettings
     feedback: FeedbackSettings
@@ -245,7 +266,7 @@ class Settings(BaseModel):
 class HealthCheck(BaseModel):
     """Server health status."""
     status: str
-    comfyui: Dict[str, Any]
+    openai: Dict[str, Any]
     storage: Dict[str, Any]
 
 

@@ -1,4 +1,10 @@
-"""JewelRender Configuration"""
+"""JewelRender Configuration
+
+AI Engine: OpenAI APIs (cloud)
+- GPT-4.1-mini: Persistent brain (vision analysis, RIL tagging, quality assessment)
+- GPT Image 1.5: Image generation and editing
+- Sora 2: Video generation (360 rotations)
+"""
 
 import os
 from pathlib import Path
@@ -8,13 +14,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ============================================================================
-# ComfyUI Connection
+# OpenAI API Configuration
 # ============================================================================
 
-COMFYUI_HOST = os.getenv('COMFYUI_HOST', '127.0.0.1')
-COMFYUI_PORT = int(os.getenv('COMFYUI_PORT', '8188'))
-COMFYUI_URL = f'http://{COMFYUI_HOST}:{COMFYUI_PORT}'
-COMFYUI_TIMEOUT = int(os.getenv('COMFYUI_TIMEOUT', '600'))
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
+
+# Brain model — always-on vision analysis, classification, tagging
+OPENAI_BRAIN_MODEL = os.getenv('OPENAI_BRAIN_MODEL', 'gpt-4.1-mini')
+
+# Image generation/editing model
+OPENAI_IMAGE_MODEL = os.getenv('OPENAI_IMAGE_MODEL', 'gpt-image-1')
+
+# Video generation model
+OPENAI_VIDEO_MODEL = os.getenv('OPENAI_VIDEO_MODEL', 'sora-2')
+
+# API timeouts (seconds)
+OPENAI_TIMEOUT = int(os.getenv('OPENAI_TIMEOUT', '120'))
+OPENAI_VIDEO_TIMEOUT = int(os.getenv('OPENAI_VIDEO_TIMEOUT', '600'))
 
 # ============================================================================
 # Output Settings
@@ -30,7 +46,6 @@ OUTPUT_FORMAT = 'jpeg'
 # ============================================================================
 
 VIDEO_FORMAT = 'mp4'
-VIDEO_MODEL = 'sv3d_p'  # or 'wan_2_1'
 VIDEO_CODEC = 'h264'
 VIDEO_BITRATE = '5000k'
 
@@ -96,13 +111,6 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 LOG_FILE = USER_DATA_DIR / 'jewelrender.log'
 
 # ============================================================================
-# Checkpoint (ComfyUI Model)
-# ============================================================================
-
-DEFAULT_CHECKPOINT = 'sd_xl_base_1.0.safetensors'
-CHECKPOINT = os.getenv('CHECKPOINT', DEFAULT_CHECKPOINT)
-
-# ============================================================================
 # CORS Settings
 # ============================================================================
 
@@ -119,5 +127,5 @@ CORS_ORIGINS = [
 # Render Queue Settings
 # ============================================================================
 
-MAX_CONCURRENT_RENDERS = 1  # ComfyUI typically handles 1 at a time
-RENDER_TIMEOUT_SECONDS = 600  # 10 minutes default timeout
+MAX_CONCURRENT_RENDERS = 3  # OpenAI API supports concurrent requests
+RENDER_TIMEOUT_SECONDS = 120  # Faster than local GPU
