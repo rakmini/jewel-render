@@ -534,10 +534,9 @@ Get current settings.
 **Response**:
 ```json
 {
-  "comfyui": {
-    "host": "127.0.0.1",
-    "port": 8188,
-    "checkpoint": "sd_xl_base_1.0.safetensors"
+  "ai": {
+    "provider": "fal",
+    "key_configured": true
   },
   "output": {
     "width": 1170,
@@ -566,10 +565,6 @@ Update settings.
 **Request Body**:
 ```json
 {
-  "comfyui": {
-    "host": "127.0.0.1",
-    "port": 8188
-  },
   "feedback": {
     "auto_add_approved_to_ril": false
   }
@@ -584,28 +579,23 @@ Update settings.
 }
 ```
 
-### POST /api/settings/test-connection
+### GET /api/fal/test
 
-Test ComfyUI connection.
+Test Fal.AI API key validity.
 
 **Response (Success)**:
 ```json
 {
-  "connected": true,
-  "host": "127.0.0.1",
-  "port": 8188,
-  "models": ["sd_xl_base_1.0", "sd_xl_refiner_1.0"],
-  "latency_ms": 12
+  "status": "ok",
+  "message": "Fal.AI API key is valid"
 }
 ```
 
 **Response (Failure)**:
 ```json
 {
-  "connected": false,
-  "error": "Connection refused",
-  "host": "127.0.0.1",
-  "port": 8188
+  "error": "Invalid API key",
+  "code": "INVALID_KEY"
 }
 ```
 

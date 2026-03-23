@@ -1,0 +1,11 @@
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+.env
+.env.local
+.git/
+docs/
+config/
+.github/
+.claude/
