@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>JewelRender - Alternative UIs</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --panel-bg: #1e1e1e;
+      --text: #f0f0f0;
+      --accent: #3b82f6;
+      --approve: #10b981;
+      --reject: #ef4444;
+      --border: #333;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 50px;
+    }
+    h1 { margin-top: 40px; text-align: center; }
+    p.desc { color: #aaa; text-align: center; max-width: 600px; margin-bottom: 40px; line-height: 1.5; }
+    
+    .story-section {
+      width: 100%;
+      max-width: 400px;
+      background: var(--panel-bg);
+      border-radius: 20px;
+      margin-bottom: 50px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .story-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .story-header h2 { margin: 0 0 5px 0; font-size: 1.2rem; }
+    .story-header p { margin: 0; font-size: 0.9rem; color: #888; }
+    
+    /* ----------------------------------------------------
+       Story 1: Rapid Batch Review (Tinder/TikTok Style)
+       ---------------------------------------------------- */
+    .mockup-review {
+      height: 600px;
+      background: #000;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .review-card {
+      width: 90%;
+      height: 85%;
+      background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1599643478514-4a484ed2ce15?auto=format&fit=crop&q=80&w=600') center/cover;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      position: absolute;
+      transition: transform 0.3s ease;
+    }
+    .review-card.stacked {
+      transform: scale(0.95) translateY(20px);
+      filter: brightness(0.5);
+      z-index: 0;
+      background-image: url('https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600');
+    }
+    .review-card.active { z-index: 1; }
+    
+    .review-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .review-badges { display: flex; gap: 10px; }
+    .badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+    }
+    .review-actions {
+      display: flex;
+      gap: 15px;
+    }
+    .btn-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: transform 0.1s;
+    }
+    .btn-circle:active { transform: scale(0.9); }
+    .btn-reject { background: rgba(239, 68, 68, 0.2); color: var(--reject); border: 2px solid var(--reject); }
+    .btn-approve { background: rgba(16, 185, 129, 0.2); color: var(--approve); border: 2px solid var(--approve); }
+
+    /* ----------------------------------------------------
+       Story 2: Radial Style Matrix (Cross-Preset)
+       ---------------------------------------------------- */
+    .mockup-style {
+      height: 600px;
+      background: url('https://images.unsplash.com/photo-1599643478514-4a484ed2ce15?auto=format&fit=crop&q=80&w=600') center/cover;
+      position: relative;
+    }
+    .style-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .radial-menu {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+    }
+    .center-node {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px; height: 80px;
+      background: url('https://images.unsplash.com/photo-1599643478514-4a484ed2ce15?auto=format&fit=crop&q=80&w=200') center/cover;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+      z-index: 10;
+    }
+    .style-node {
+      position: absolute;
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: var(--panel-bg);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .style-node:hover { border-color: var(--accent); transform: scale(1.1); }
+    .style-node span { font-size: 0.7rem; margin-top: 5px; text-align: center; line-height: 1.1; }
+    .style-node.top { top: 0; left: 50%; transform: translate(-50%, 0); background: #e0f2fe; color: #0369a1; } /* Cool Blue */
+    .style-node.right { top: 50%; right: 0; transform: translate(0, -50%); background: #ffffff; color: #000; } /* White Retail */
+    .style-node.left { top: 50%; left: 0; transform: translate(0, -50%); background: #d6d3d1; color: #444; } /* Yashica Film */
+    .style-node.bottom { bottom: 0; left: 50%; transform: translate(-50%, 0); border: 2px dashed #888; color: #888; } /* + New */
+
+    /* ----------------------------------------------------
+       Story 3: Interactive Recede (Outpainting Bounds)
+       ---------------------------------------------------- */
+    .mockup-recede {
+      height: 600px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .canvas-bounds {
+      width: 250px;
+      height: 540px; /* iPhone portrait ratio roughly */
+      border: 2px solid #555;
+      background: #222;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .recede-image {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px; /* Scaled down representation of the original image */
+      height: 346px;
+      background: url('https://images.unsplash.com/photo-1599643478514-4a484ed2ce15?auto=format&fit=crop&q=80&w=400') center/cover;
+      border: 2px dashed var(--accent);
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7); /* Dims the newly outpainted area */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .recede-ui {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30,30,30,0.9);
+      padding: 15px 20px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      border: 1px solid var(--border);
+      width: 80%;
+    }
+    .recede-ui span { font-size: 0.9rem; font-weight: 600; }
+    .recede-ui input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+    .drag-handles {
+      position: absolute;
+      width: 16px; height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+    .tl { top: -8px; left: -8px; }
+    .tr { top: -8px; right: -8px; }
+    .bl { bottom: -8px; left: -8px; }
+    .br { bottom: -8px; right: -8px; }
+
+  </style>
+</head>
+<body>
+
+  <h1>Alternative UI Concepts</h1>
+  <p class="desc">Three alternative interface designs targeting the most critical user stories of JewelRender, prioritizing the mobile-first "remote control" paradigm.</p>
+
+  <!-- STORY 1 -->
+  <div class="story-section">
+    <div class="story-header">
+      <h2>1. Rapid Batch Review Loop</h2>
+      <p>Problem: Clicking tiny +/- buttons in a grid is slow for 50+ images.</p>
+      <p>Solution: A full-screen, immersive swipe interface to rapidly train the Reference Image Library (RIL).</p>
+    </div>
+    <div class="mockup-review">
+      <div class="review-card stacked"></div>
+      <div class="review-card active">
+        <div class="review-overlay">
+          <div class="review-badges">
+            <span class="badge" style="color: #60a5fa;">Cool Blue</span>
+            <span class="badge">Generation</span>
+          </div>
+          <div class="review-actions">
+            <button class="btn-circle btn-reject">✕</button>
+            <button class="btn-circle btn-approve">♥</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORY 2 -->
+  <div class="story-section">
+    <div class="story-header">
+      <h2>2. Cross-Preset Style Matrix</h2>
+      <p>Problem: Dragging images between tabs feels disjointed and hides context.</p>
+      <p>Solution: A "long-press" floating radial menu. It shows the current image at the center, surrounded by instant-transfer target styles.</p>
+    </div>
+    <div class="mockup-style">
+      <div class="style-overlay">
+        <div class="radial-menu">
+          <div class="center-node"></div>
+          <div class="style-node top"><span>Cool Blue</span></div>
+          <div class="style-node right"><span>White Retail</span></div>
+          <div class="style-node left"><span>Yashica Film</span></div>
+          <div class="style-node bottom"><span>+ New<br>Style</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STORY 3 -->
+  <div class="story-section">
+    <div class="story-header">
+      <h2>3. Visual Recede (Outpainting)</h2>
+      <p>Problem: A simple 0-50% slider doesn't tell the user what the final composition will look like.</p>
+      <p>Solution: An interactive "reverse crop" box. You pinch/scale the original image down inside a fixed canvas, visualizing exactly how much AI-generated space will be added.</p>
+    </div>
+    <div class="mockup-recede">
+      <div class="canvas-bounds">
+        <div class="recede-image">
+          <div class="drag-handles tl"></div>
+          <div class="drag-handles tr"></div>
+          <div class="drag-handles bl"></div>
+          <div class="drag-handles br"></div>
+          <span style="color: white; font-weight: bold; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 4px;">Original Size</span>
+        </div>
+      </div>
+      <div class="recede-ui">
+        <span>Recede</span>
+        <input type="range" min="0" max="50" value="30">
+        <span>30%</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
