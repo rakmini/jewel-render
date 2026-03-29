@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US-08 — Reference Image Library · JewelRender</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+    .preset-tabs { display: flex; gap: 4px; }
+    .tab { padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: var(--text2); background: none; }
+    .tab.active { background: var(--bg3); border-color: var(--border); color: var(--text); }
+    .conn-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+
+    .ril-page { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+    .ril-header { padding: 16px 24px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .ril-title-area { display: flex; flex-direction: column; gap: 2px; }
+    .ril-title { font-size: 16px; font-weight: 700; }
+    .ril-subtitle { font-size: 12px; color: var(--text2); }
+    .ril-actions { display: flex; gap: 8px; }
+
+    /* Preset tabs for RIL */
+    .ril-preset-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; overflow-x: auto; }
+    .ril-ptab { padding: 10px 20px; font-size: 13px; cursor: pointer; color: var(--text2); border: none; background: none; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .ril-ptab.active { color: var(--text); border-bottom-color: var(--accent); }
+    .ril-ptab-count { font-size: 11px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 1px 7px; }
+
+    .ril-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* Stats row */
+    .ril-stats { display: flex; gap: 12px; }
+    .stat-card { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .stat-value { font-size: 28px; font-weight: 800; margin-bottom: 2px; }
+    .stat-label { font-size: 12px; color: var(--text2); }
+    .stat-card.approved .stat-value { color: var(--green); }
+    .stat-card.manual .stat-value { color: var(--blue); }
+    .stat-card.exported .stat-value { color: var(--accent2); }
+
+    /* Feed toggle */
+    .feed-filters { display: flex; gap: 8px; align-items: center; }
+    .filter-pill { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg3); font-size: 12px; cursor: pointer; color: var(--text2); }
+    .filter-pill.active { background: rgba(124,108,248,0.15); border-color: var(--accent); color: var(--accent2); }
+
+    /* Image grid */
+    .ril-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .ril-item { position: relative; aspect-ratio: 3/4; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; background: var(--bg3); border: 1px solid var(--border); group: true; }
+    .ril-item:hover .ril-overlay { opacity: 1; }
+    .ril-img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .ri1 { background: linear-gradient(135deg, #1a2040, #3040a0); }
+    .ri2 { background: linear-gradient(135deg, #201820, #602040); }
+    .ri3 { background: linear-gradient(135deg, #182020, #206040); }
+    .ri4 { background: linear-gradient(135deg, #201c10, #806020); }
+    .ri5 { background: linear-gradient(135deg, #0a1030, #2030a0); }
+    .ri6 { background: linear-gradient(135deg, #280a20, #802060); }
+    .ri7 { background: linear-gradient(135deg, #0a2010, #206040); }
+    .ri8 { background: linear-gradient(135deg, #201810, #a05030); }
+    .ril-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); opacity: 0; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .ril-remove { width: 28px; height: 28px; background: rgba(248,113,113,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; cursor: pointer; }
+    .ril-source-tag { position: absolute; top: 4px; left: 4px; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; }
+    .source-approved { background: rgba(74,222,128,0.85); color: #000; }
+    .source-manual   { background: rgba(96,165,250,0.85); color: #000; }
+    .source-export   { background: rgba(124,108,248,0.85); color: #fff; }
+    .ril-add { border: 2px dashed var(--border); background: var(--bg3); }
+    .ril-add:hover { border-color: var(--accent); }
+    .ril-add .ril-img { color: var(--muted); font-size: 32px; }
+    .ril-add:hover .ril-img { color: var(--accent2); }
+
+    /* How it compounds */
+    .compound-flow { display: flex; align-items: center; gap: 0; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .flow-step { flex: 1; padding: 14px 16px; text-align: center; position: relative; }
+    .flow-step:not(:last-child)::after { content: '→'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 16px; z-index: 1; }
+    .flow-icon { font-size: 24px; margin-bottom: 6px; }
+    .flow-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+    .flow-desc { font-size: 11px; color: var(--text2); }
+
+    .bottom-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 52px; background: var(--bg2); border-top: 1px solid var(--border); flex-shrink: 0; }
+    .bar-label { font-size: 12px; color: var(--text2); display: flex; gap: 8px; align-items: center; }
+    .bar-actions { display: flex; gap: 8px; }
+    .export-count { background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+  </style>
+</head>
+<body>
+  <div class="story-badge"><strong>US-08</strong> Reference Image Library — train the AI's style with curated images</div>
+
+  <div class="header">
+    <span class="logo">JewelRender</span>
+    <div class="preset-tabs">
+      <button class="tab active">Cool Blue</button>
+      <button class="tab">White Retail</button>
+      <button class="tab">Yashica Film</button>
+      <button class="tab">+</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="conn-badge"><span class="dot dot-green"></span>ComfyUI connected</div>
+    </div>
+  </div>
+
+  <div class="ril-page">
+    <div class="ril-header">
+      <div class="ril-title-area">
+        <div class="ril-title">Reference Image Library</div>
+        <div class="ril-subtitle">Images that teach the AI what each preset should look like — permanent, per preset</div>
+      </div>
+      <div class="ril-actions">
+        <button class="btn btn-secondary">⬆ Upload References</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)">Clear All</button>
+      </div>
+    </div>
+
+    <!-- Per-preset tabs -->
+    <div class="ril-preset-tabs">
+      <button class="ril-ptab active">
+        <span class="dot dot-blue" style="background:#60a5fa"></span>
+        Cool Blue
+        <span class="ril-ptab-count">18</span>
+      </button>
+      <button class="ril-ptab">
+        <span class="dot" style="background:var(--text2)"></span>
+        White Retail
+        <span class="ril-ptab-count">8</span>
+      </button>
+      <button class="ril-ptab">
+        <span class="dot dot-amber"></span>
+        Yashica Film
+        <span class="ril-ptab-count">5</span>
+      </button>
+    </div>
+
+    <div class="ril-body">
+      <!-- Stats -->
+      <div class="ril-stats">
+        <div class="stat-card approved">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Auto-added from approved renders</div>
+        </div>
+        <div class="stat-card manual">
+          <div class="stat-value">4</div>
+          <div class="stat-label">Manually uploaded</div>
+        </div>
+        <div class="stat-card exported">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Auto-deposited from exports</div>
+        </div>
+      </div>
+
+      <!-- Filter pills -->
+      <div class="feed-filters">
+        <span style="font-size:12px;color:var(--text2)">Filter:</span>
+        <button class="filter-pill active">All 18</button>
+        <button class="filter-pill">✅ Approved (12)</button>
+        <button class="filter-pill">📤 Exported (2)</button>
+        <button class="filter-pill">⬆ Manual (4)</button>
+      </div>
+
+      <!-- Image grid -->
+      <div class="ril-grid">
+        <div class="ril-item"><div class="ril-img ri1">💎</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri2">💍</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri3">⌚</div><div class="ril-source-tag source-manual">⬆</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri4">🔮</div><div class="ril-source-tag source-export">📤</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri5">💎</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri6">💍</div><div class="ril-source-tag source-manual">⬆</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri7">💎</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri8">🔮</div><div class="ril-source-tag source-export">📤</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri1">💎</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri2">💍</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri3">⌚</div><div class="ril-source-tag source-manual">⬆</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri4">🔮</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri5">💎</div><div class="ril-source-tag source-manual">⬆</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri6">💍</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri7">💎</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri8">🔮</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item"><div class="ril-img ri1">💎</div><div class="ril-source-tag source-approved">✅</div><div class="ril-overlay"><div class="ril-remove">✕</div></div></div>
+        <div class="ril-item ril-add"><div class="ril-img">+</div></div>
+      </div>
+
+      <!-- Compound learning diagram -->
+      <div>
+        <h3 style="margin-bottom:10px">How Learning Compounds</h3>
+        <div class="compound-flow">
+          <div class="flow-step">
+            <div class="flow-icon">🎨</div>
+            <div class="flow-name">Render</div>
+            <div class="flow-desc">AI generates images</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon">✏️</div>
+            <div class="flow-name">Edit</div>
+            <div class="flow-desc">Fine-tune in editor</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon">✅</div>
+            <div class="flow-name">Approve</div>
+            <div class="flow-desc">Press + → auto-adds to RIL</div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-icon">📤</div>
+            <div class="flow-name">Export</div>
+            <div class="flow-desc">Auto-deposits to RIL</div>
+          </div>
+          <div class="flow-step" style="background:rgba(124,108,248,0.08);border-left:1px solid var(--border)">
+            <div class="flow-icon">🧠</div>
+            <div class="flow-name">Smarter AI</div>
+            <div class="flow-desc">Next batch improves automatically</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="bar-label"><span class="dot dot-green"></span><strong>Cool Blue</strong><span style="color:var(--border)">/</span>Reference Library</div>
+    <span style="font-size:12px;color:var(--text2)">18 images training the AI style</span>
+    <div class="bar-actions">
+      <button class="btn btn-secondary">← Back to Workspace</button>
+    </div>
+  </div>
+
+  <script src="nav.js"></script>
+</body>
+</html>

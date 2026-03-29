@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US-07 — VSCO Image Editor · JewelRender</title>
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* Editor overlay covers everything */
+    .editor {
+      position: fixed; inset: 0; background: var(--bg); z-index: 100;
+      display: flex; flex-direction: column;
+    }
+
+    /* Editor header */
+    .editor-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 52px; background: var(--bg2);
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .editor-close { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--bg3); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 16px; }
+    .editor-close:hover { color: var(--text); border-color: var(--muted); }
+    .editor-tabs { display: flex; gap: 2px; background: var(--bg3); border-radius: 20px; padding: 3px; border: 1px solid var(--border); }
+    .editor-tab { padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text2); }
+    .editor-tab.active { background: var(--accent); color: #fff; }
+    .editor-nav { display: flex; align-items: center; gap: 8px; }
+    .nav-btn { width: 28px; height: 28px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg3); cursor: pointer; color: var(--text2); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .nav-pos { font-size: 12px; color: var(--text2); }
+    .before-after-btn { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg3); font-size: 12px; cursor: pointer; color: var(--text2); }
+    .before-after-btn:hover { border-color: var(--accent); color: var(--accent2); }
+
+    /* Editor body */
+    .editor-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* Preview */
+    .editor-preview { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; background: #080810; position: relative; }
+    .preview-img {
+      height: 100%; max-height: 100%; aspect-ratio: 9/19.5;
+      border-radius: var(--radius);
+      background: linear-gradient(160deg, #1a2040 0%, #3040a0 40%, #4060c0 70%, #2050a0 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 72px; position: relative; overflow: hidden; box-shadow: var(--shadow);
+    }
+    .preview-badge {
+      position: absolute; bottom: 12px; left: 12px;
+      background: rgba(0,0,0,0.7); color: var(--text); font-size: 11px;
+      padding: 4px 8px; border-radius: 20px; backdrop-filter: blur(4px);
+    }
+    .compare-split {
+      position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 2px; background: #fff; opacity: 0.5;
+      pointer-events: none;
+    }
+    .compare-left { position: absolute; left: 8px; top: 8px; font-size: 10px; font-weight: 700; color: var(--muted); background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; }
+    .compare-right { position: absolute; right: 8px; top: 8px; font-size: 10px; font-weight: 700; color: var(--accent2); background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; }
+
+    /* Controls panel */
+    .editor-controls {
+      width: 280px; flex-shrink: 0; border-left: 1px solid var(--border);
+      background: var(--bg2); overflow-y: auto; padding: 16px;
+    }
+
+    .adjust-group { margin-bottom: 20px; }
+    .adjust-group h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+    .slider-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .slider-row label { font-size: 12px; color: var(--text2); width: 80px; flex-shrink: 0; }
+    .slider-row .val { font-size: 12px; width: 28px; text-align: right; flex-shrink: 0; }
+    .slider-row input[type=range] { flex: 1; }
+    /* Changed values highlight */
+    .changed label { color: var(--text); }
+    .changed .val { color: var(--accent2); }
+
+    /* Crop panel (hidden by default) */
+    .crop-panel { display: none; }
+    .crop-panel.active { display: block; }
+    .adjust-panel.hidden { display: none; }
+
+    .aspect-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .aspect-pill { padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg3); font-size: 12px; cursor: pointer; color: var(--text2); }
+    .aspect-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .transform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .transform-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg3); cursor: pointer; font-size: 12px; color: var(--text2); }
+    .transform-btn:hover { border-color: var(--accent); color: var(--accent2); }
+
+    /* Editor footer */
+    .editor-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 52px; background: var(--bg2);
+      border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .footer-left { display: flex; gap: 8px; }
+    .footer-right { display: flex; gap: 8px; }
+
+    /* The underlying workspace peeking through at low opacity */
+    .workspace-peek { position: fixed; inset: 0; z-index: 50; opacity: 0.2; pointer-events: none; display: flex; flex-direction: column; background: var(--bg); }
+  </style>
+</head>
+<body>
+  <div class="story-badge" style="z-index:200"><strong>US-07</strong> VSCO-Style Image Editor — adjust, crop, and export</div>
+
+  <!-- Dimmed workspace peek -->
+  <div class="workspace-peek">
+    <div style="height:52px;background:var(--bg2);border-bottom:1px solid var(--border)"></div>
+    <div style="flex:1;display:flex">
+      <div style="width:300px;border-right:1px solid var(--border);background:var(--bg2)"></div>
+      <div style="flex:1;background:var(--bg)"></div>
+    </div>
+  </div>
+
+  <!-- Editor overlay -->
+  <div class="editor">
+    <!-- Header -->
+    <div class="editor-header">
+      <button class="editor-close">✕</button>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="editor-tabs" id="editorTabs">
+          <button class="editor-tab active" data-panel="adjust">Adjust</button>
+          <button class="editor-tab" data-panel="crop">Crop</button>
+        </div>
+        <button class="before-after-btn">Before / After</button>
+      </div>
+      <div class="editor-nav">
+        <button class="nav-btn">‹</button>
+        <span class="nav-pos">1 of 3</span>
+        <button class="nav-btn">›</button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="editor-body">
+      <!-- Preview -->
+      <div class="editor-preview">
+        <div class="preview-img">
+          💎
+          <div class="compare-split"></div>
+          <div class="compare-left">BEFORE</div>
+          <div class="compare-right">AFTER</div>
+          <div class="preview-badge">ring_front_edit_01.jpg · 1170×2532</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="editor-controls">
+        <!-- Adjust Tab -->
+        <div class="adjust-panel" id="panelAdjust">
+          <div class="adjust-group">
+            <h4>Light</h4>
+            <div class="slider-row changed"><label>Exposure</label><input type="range" min="-100" max="100" value="15"><span class="val">+15</span></div>
+            <div class="slider-row"><label>Contrast</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+            <div class="slider-row changed"><label>Highlights</label><input type="range" min="-100" max="100" value="-20"><span class="val">−20</span></div>
+            <div class="slider-row changed"><label>Shadows</label><input type="range" min="-100" max="100" value="10"><span class="val">+10</span></div>
+          </div>
+          <div class="adjust-group">
+            <h4>Color</h4>
+            <div class="slider-row changed"><label>Temperature</label><input type="range" min="-100" max="100" value="-10"><span class="val">−10</span></div>
+            <div class="slider-row"><label>Tint</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+            <div class="slider-row changed"><label>Saturation</label><input type="range" min="-100" max="100" value="20"><span class="val">+20</span></div>
+            <div class="slider-row"><label>Vibrance</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+            <div class="slider-row"><label>Skin Tone</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+          </div>
+          <div class="adjust-group">
+            <h4>Detail</h4>
+            <div class="slider-row changed"><label>Sharpness</label><input type="range" min="-100" max="100" value="15"><span class="val">+15</span></div>
+            <div class="slider-row"><label>Clarity</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+          </div>
+          <div class="adjust-group">
+            <h4>Film</h4>
+            <div class="slider-row"><label>Grain</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+            <div class="slider-row"><label>Fade</label><input type="range" min="-100" max="100" value="0"><span class="val">0</span></div>
+            <div class="slider-row changed"><label>Vignette</label><input type="range" min="-100" max="100" value="18"><span class="val">+18</span></div>
+          </div>
+        </div>
+
+        <!-- Crop Tab (hidden) -->
+        <div class="crop-panel" id="panelCrop">
+          <div style="margin-bottom:14px">
+            <h4 style="color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">Aspect Ratio</h4>
+            <div class="aspect-pills">
+              <button class="aspect-pill active">Free</button>
+              <button class="aspect-pill">1:1</button>
+              <button class="aspect-pill">4:5</button>
+              <button class="aspect-pill">9:16</button>
+              <button class="aspect-pill">16:9</button>
+            </div>
+          </div>
+          <div style="margin-bottom:14px">
+            <h4 style="color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">Straighten</h4>
+            <div class="slider-row">
+              <label>Angle</label>
+              <input type="range" min="-45" max="45" value="0">
+              <span class="val">0°</span>
+            </div>
+          </div>
+          <h4 style="color:var(--muted);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">Transform</h4>
+          <div class="transform-grid">
+            <button class="transform-btn">↺ Rotate L</button>
+            <button class="transform-btn">↻ Rotate R</button>
+            <button class="transform-btn">↔ Flip H</button>
+            <button class="transform-btn">↕ Flip V</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="editor-footer">
+      <div class="footer-left">
+        <button class="btn btn-ghost">Reset All</button>
+      </div>
+      <div class="footer-right">
+        <button class="btn btn-secondary">Apply</button>
+        <button class="btn btn-primary">Export</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.editor-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.editor-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = tab.dataset.panel;
+        if (panel === 'adjust') {
+          document.getElementById('panelAdjust').classList.remove('hidden');
+          document.getElementById('panelCrop').classList.remove('active');
+        } else {
+          document.getElementById('panelAdjust').classList.add('hidden');
+          document.getElementById('panelCrop').classList.add('active');
+        }
+      });
+    });
+  </script>
+  <script src="nav.js"></script>
+</body>
+</html>

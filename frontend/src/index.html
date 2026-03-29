@@ -1,0 +1,3762 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)file:///Users/raksha/Downloads/JewelRender_FINAL_1.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JewelRender</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #f5f3f0;
+    color: #2c2c2c;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 1020px;
+    margin: 0 auto;
+    padding: 40px 32px;
+  }
+
+  /* Header */
+  .header-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+  .logo {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .tagline {
+    font-size: 12px;
+    color: #999;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  /* Top Nav */
+  .top-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .top-nav-btn {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 9px 22px;
+    border-radius: 22px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 400;
+  }
+  .top-nav-btn:hover { border-color: #999; color: #666; }
+  .top-nav-btn.active {
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border-color: #1a1a1a;
+    font-weight: 500;
+  }
+
+  .top-nav-view { display: none; }
+  .top-nav-view.active { display: block; }
+
+  /* Preset Tabs */
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 32px;
+  }
+  .tab {
+    padding: 10px 0;
+    margin-right: 28px;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #aaa;
+    cursor: pointer;
+    border-bottom: 1.5px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: #666; }
+  .tab.active {
+    color: #1a1a1a;
+    border-bottom-color: #1a1a1a;
+  }
+  .tab-add {
+    padding: 10px 0;
+    margin-left: auto;
+    margin-right: 0;
+    font-size: 16px;
+    font-weight: 300;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+    border-bottom: 1.5px solid transparent;
+  }
+  .tab-add:hover { color: #888; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Mode Switcher */
+  .mode-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 28px;
+    background: #eae8e4;
+    border-radius: 24px;
+    padding: 3px;
+    width: fit-content;
+  }
+  .mode-btn {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border-radius: 22px;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+  .mode-btn:hover { color: #666; }
+  .mode-btn.active {
+    background: white;
+    color: #1a1a1a;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .mode-content { display: none; }
+  .mode-content.active { display: block; }
+
+  /* Layout: two columns */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* Left: Image Queue */
+  .queue-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 12px;
+  }
+
+  .drop-zone {
+    border: 1.5px dashed #ccc;
+    border-radius: 8px;
+    padding: 28px 16px;
+    text-align: center;
+    color: #bbb;
+    font-size: 12px;
+    font-weight: 300;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .drop-zone:hover {
+    border-color: #999;
+    color: #999;
+  }
+  .drop-zone .plus {
+    display: block;
+    font-size: 24px;
+    font-weight: 200;
+    margin-bottom: 6px;
+    color: #ccc;
+  }
+
+  .queue-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .btn-sm {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 7px 16px;
+    border: 1px solid #ddd;
+    border-radius: 22px;
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { border-color: #999; color: #555; }
+
+  .file-list {
+    list-style: none;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .file-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #888;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    font-weight: 300;
+  }
+  .file-list li.active { color: #1a1a1a; font-weight: 400; }
+  .file-list .feedback {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .file-list li:hover .feedback { opacity: 1; }
+  .fb-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+    cursor: pointer;
+    color: #bbb;
+    transition: all 0.15s;
+  }
+  .fb-btn:hover { border-color: #999; color: #555; }
+  .fb-btn.positive:hover { border-color: #7ec88b; color: #5aa76a; background: #f0faf2; }
+  .fb-btn.negative:hover { border-color: #e08080; color: #c55; background: #fdf0f0; }
+  .fb-btn.approved { border-color: #7ec88b; color: #5aa76a; background: #f0faf2; }
+  .fb-btn.rejected { border-color: #e08080; color: #c55; background: #fdf0f0; }
+
+  .file-count {
+    font-size: 10px;
+    color: #bbb;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Right: Style Panel */
+  .section {
+    margin-bottom: 26px;
+  }
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 12px;
+  }
+
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .field-label {
+    font-size: 12px;
+    color: #777;
+    font-weight: 300;
+  }
+  .field-value {
+    font-size: 12px;
+    color: #2c2c2c;
+    font-weight: 400;
+  }
+
+  .swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .swatch-row {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Toggle Pills (for metals, gemstones, karats) */
+  .toggle-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .toggle-pill {
+    font-size: 11px;
+    padding: 7px 16px;
+    border-radius: 22px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .toggle-pill:hover { border-color: #999; color: #555; }
+  .toggle-pill.active {
+    background: #1a1a1a;
+    color: white;
+    border-color: #1a1a1a;
+  }
+  /* Metal color swatches on pills */
+  .toggle-pill .metal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .metal-dot.wg { background: #e0e0e0; border: 1px solid #ccc; }
+  .metal-dot.yg { background: #d4a846; }
+  .metal-dot.rg { background: #c9837a; }
+
+  /* Karat sub-pills */
+  .karat-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 14px;
+    padding-left: 4px;
+  }
+  .karat-pill {
+    font-size: 10px;
+    padding: 4px 13px;
+    border-radius: 14px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+    color: #aaa;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .karat-pill:hover { border-color: #999; color: #666; }
+  .karat-pill.active {
+    background: #555;
+    color: white;
+    border-color: #555;
+  }
+
+  /* Gemstone color dots */
+  .gem-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .gem-dot.diamond { background: #f0f0f0; border: 1px solid #ddd; }
+  .gem-dot.ruby { background: #c41e3a; }
+  .gem-dot.sapphire-blue { background: #0f52ba; }
+  .gem-dot.sapphire-pink { background: #d473a2; }
+  .gem-dot.sapphire-yellow { background: #e8c840; }
+  .gem-dot.sapphire-white { background: #f5f5f5; border: 1px solid #ddd; }
+  .gem-dot.emerald { background: #046a38; }
+  .gem-dot.pearl { background: #f5f0e8; border: 1px solid #ddd; }
+
+  /* Slider */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .slider-track {
+    flex: 1;
+    height: 2px;
+    background: #ddd;
+    border-radius: 1px;
+    position: relative;
+  }
+  .slider-fill {
+    position: absolute;
+    height: 100%;
+    background: #1a1a1a;
+    border-radius: 1px;
+  }
+  .slider-dot {
+    width: 10px;
+    height: 10px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    position: absolute;
+    top: -4px;
+  }
+  .slider-val {
+    font-size: 11px;
+    color: #999;
+    min-width: 30px;
+    text-align: right;
+  }
+
+  /* Select */
+  .select-pill {
+    font-size: 11px;
+    padding: 5px 14px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    color: #555;
+  }
+
+  /* Checkbox */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #555;
+    font-weight: 300;
+  }
+  .check {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    border: 1.5px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .check.on {
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+  }
+  .check.on::after {
+    content: '';
+    width: 6px; height: 3px;
+    border-left: 1.5px solid white;
+    border-bottom: 1.5px solid white;
+    transform: rotate(-45deg);
+    margin-top: -1px;
+  }
+
+  /* Tags */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #eae8e4;
+    color: #777;
+    letter-spacing: 0.3px;
+  }
+
+  /* Reference gallery */
+  .ref-area {
+    border: 1.5px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: #ccc;
+    font-size: 11px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ref-area:hover { border-color: #999; color: #999; }
+  .ref-area .icon { font-size: 18px; margin-bottom: 4px; display: block; opacity: 0.4; }
+  .ref-note {
+    font-size: 10px;
+    color: #bbb;
+    margin-top: 8px;
+    font-weight: 300;
+    font-style: italic;
+  }
+  .ref-thumbs {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .ref-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    background: #e8e6e2;
+    border: 1px solid #ddd;
+    position: relative;
+    overflow: hidden;
+  }
+  .ref-thumb .remove {
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 8px;
+    line-height: 14px;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .ref-thumb:hover .remove { opacity: 1; }
+
+  /* Multi-angle upload for video */
+  .angle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .angle-slot {
+    border: 1.5px dashed #ddd;
+    border-radius: 8px;
+    padding: 18px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .angle-slot:hover { border-color: #999; }
+  .angle-slot .angle-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-top: 4px;
+  }
+  .angle-slot .plus {
+    display: block;
+    font-size: 18px;
+    font-weight: 200;
+    color: #ccc;
+  }
+
+  /* Textarea */
+  .text-area {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 11px;
+    color: #555;
+    font-family: inherit;
+    font-weight: 300;
+    resize: none;
+    min-height: 44px;
+  }
+  .text-area::placeholder { color: #bbb; font-style: italic; }
+
+  /* Input */
+  .input {
+    padding: 5px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 11px;
+    color: #555;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  /* Connection */
+  .conn-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .dot-status {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ccc;
+  }
+  .dot-status.on { background: #7ec88b; }
+  .conn-label { font-size: 10px; color: #bbb; }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: #e8e6e2;
+    margin: 24px 0;
+  }
+
+  /* Preset management row */
+  .preset-manage {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .preset-name-edit {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+    border: none;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    font-family: inherit;
+    padding: 2px 0;
+    transition: border-color 0.2s;
+  }
+  .preset-name-edit:focus {
+    outline: none;
+    border-bottom-color: #1a1a1a;
+  }
+  .btn-sm.danger { color: #c55; border-color: #e8c8c8; }
+  .btn-sm.danger:hover { color: #a33; border-color: #c55; }
+
+  /* Recede Control */
+  .recede-section {
+    margin-bottom: 28px;
+  }
+  .recede-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .recede-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #999;
+  }
+  .recede-val {
+    font-size: 11px;
+    color: #1a1a1a;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    min-width: 36px;
+    text-align: right;
+  }
+  .recede-wrap {
+    position: relative;
+    height: 12px;
+    display: flex;
+    align-items: center;
+  }
+  .recede-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 3px;
+    background: linear-gradient(to right, #ddd 100%, #1a1a1a 100%);
+    border-radius: 2px;
+    outline: none;
+  }
+  .recede-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .recede-hint {
+    font-size: 9px;
+    color: #ccc;
+    margin-top: 6px;
+    font-weight: 300;
+    font-style: italic;
+  }
+  .recede-btn {
+    margin-top: 14px;
+    width: 100%;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 0;
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .recede-btn:hover { background: #333; }
+  .recede-btn.ready { opacity: 1; pointer-events: auto; }
+
+  /* Edit Slider Rows */
+  .edit-group { margin-bottom: 24px; }
+  .edit-group-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 14px;
+  }
+  .edit-slider-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .edit-slider-label {
+    font-size: 12px;
+    color: #777;
+    font-weight: 300;
+    min-width: 90px;
+  }
+  .edit-slider-wrap {
+    flex: 1;
+    margin: 0 10px;
+    position: relative;
+    height: 12px;
+    display: flex;
+    align-items: center;
+  }
+  .edit-slider-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 8px;
+    background: #ccc;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .edit-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    background: #ddd;
+    border-radius: 1px;
+    outline: none;
+    position: relative;
+    z-index: 2;
+  }
+  .edit-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    cursor: pointer;
+    border: none;
+  }
+  .edit-slider-val {
+    font-size: 10px;
+    color: #999;
+    min-width: 28px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Bottom */
+  .bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid #ddd;
+  }
+  .bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .active-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #bbb;
+  }
+  .active-mode {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-left: 6px;
+  }
+  .render-btn {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .render-btn:hover { background: #333; }
+
+  .export-btn {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .export-btn:hover { background: #333; }
+  .export-btn .export-icon { font-size: 14px; font-weight: 300; }
+  .export-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .export-path {
+    font-size: 10px;
+    color: #bbb;
+    font-weight: 300;
+  }
+  .export-path span {
+    color: #888;
+    cursor: pointer;
+    border-bottom: 1px dashed #ccc;
+  }
+  .export-path span:hover { color: #555; }
+
+  .progress-track {
+    width: 100%;
+    height: 2px;
+    background: #e8e6e2;
+    border-radius: 1px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; width: 0%; background: #1a1a1a; border-radius: 1px; }
+  .status {
+    font-size: 10px;
+    color: #ccc;
+    margin-top: 6px;
+    font-weight: 300;
+  }
+
+  .feedback-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+  }
+  .fb-stat { font-size: 10px; color: #bbb; }
+  .fb-stat span { font-weight: 500; }
+  .fb-stat.pos span { color: #5aa76a; }
+  .fb-stat.neg span { color: #c55; }
+
+  /* ═══ EDITOR OVERLAY ═══ */
+  .editor-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    backdrop-filter: blur(4px);
+  }
+  .editor-overlay.open { display: flex; }
+
+  .editor-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 920px;
+    max-width: 100vw;
+    background: #f5f3f0;
+    box-shadow: -8px 0 40px rgba(0,0,0,0.12);
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    z-index: 101;
+    overflow: hidden;
+  }
+
+  .editor-preview {
+    background: #e8e6e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .editor-preview-img {
+    width: 280px;
+    height: 480px;
+    background: #ADD8E6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 300;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  }
+  .editor-filename {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    font-size: 10px;
+    color: #999;
+    font-weight: 300;
+  }
+  .editor-nav {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+  }
+  .editor-nav-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    font-size: 12px;
+    line-height: 26px;
+    text-align: center;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.15s;
+  }
+  .editor-nav-btn:hover { border-color: #999; color: #333; }
+  .compare-btn {
+    position: absolute;
+    top: 16px; left: 16px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .compare-btn:hover { border-color: #999; color: #333; }
+  .compare-btn.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+
+  /* Brush tool overlay button */
+  .brush-btn {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .brush-btn:hover { border-color: #999; color: #333; }
+  .brush-btn.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+  .brush-btn .brush-icon { font-size: 12px; }
+
+  /* Brush size control */
+  .brush-controls {
+    position: absolute;
+    top: 50px; right: 16px;
+    background: white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    display: none;
+    width: 200px;
+  }
+  .brush-controls.open { display: block; }
+  .brush-controls-title {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 10px;
+  }
+  .brush-size-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .brush-size-preview {
+    width: 24px; height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .brush-size-dot {
+    border-radius: 50%;
+    background: rgba(26,26,26,0.3);
+    border: 1.5px solid #1a1a1a;
+    transition: all 0.15s;
+  }
+  .brush-prompt {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: inherit;
+    color: #555;
+    resize: none;
+    min-height: 36px;
+  }
+  .brush-prompt::placeholder { color: #bbb; font-style: italic; }
+  .brush-apply-btn {
+    margin-top: 8px;
+    width: 100%;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 0;
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .brush-apply-btn:hover { background: #333; }
+
+  .editor-sidebar {
+    padding: 32px 28px;
+    overflow-y: auto;
+    border-left: 1px solid #e8e6e2;
+  }
+  .editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    margin-bottom: 24px;
+  }
+  .editor-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #999;
+  }
+  .editor-close {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 12px;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    color: #bbb;
+  }
+  .editor-close:hover { border-color: #999; color: #555; }
+
+  .editor-divider {
+    height: 1px;
+    background: #e8e6e2;
+    margin: 20px 0;
+  }
+
+  .editor-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .editor-btn {
+    flex: 1;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px 0;
+    border-radius: 22px;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s;
+    border: none;
+  }
+  .editor-btn.primary { background: #1a1a1a; color: #f5f3f0; }
+  .editor-btn.primary:hover { background: #333; }
+  .editor-btn.secondary { background: white; color: #888; border: 1px solid #ddd; }
+  .editor-btn.secondary:hover { border-color: #999; color: #555; }
+
+  .editor-reset {
+    font-size: 10px;
+    color: #bbb;
+    text-align: center;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 300;
+  }
+  .editor-reset:hover { color: #888; }
+
+  .editor-tool-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e8e6e2;
+  }
+  .editor-tool-tab {
+    padding: 10px 0;
+    margin-right: 24px;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #bbb;
+    cursor: pointer;
+    border-bottom: 1.5px solid transparent;
+    transition: all 0.2s;
+  }
+  .editor-tool-tab:hover { color: #888; }
+  .editor-tool-tab.active {
+    color: #1a1a1a;
+    border-bottom-color: #1a1a1a;
+  }
+  .editor-tool-content { display: none; }
+  .editor-tool-content.active { display: block; }
+
+  /* Crop Tool */
+  .crop-preview {
+    width: 100%;
+    aspect-ratio: 9/16;
+    max-height: 180px;
+    background: #e8e6e2;
+    border-radius: 6px;
+    position: relative;
+    margin-bottom: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .crop-frame {
+    border: 1.5px solid rgba(255,255,255,0.8);
+    position: absolute;
+    box-shadow: 0 0 0 1000px rgba(0,0,0,0.35);
+    transition: all 0.3s;
+  }
+  .crop-frame.ratio-free { width: 80%; height: 80%; }
+  .crop-frame.ratio-1-1 { width: 60%; aspect-ratio: 1/1; height: auto; }
+  .crop-frame.ratio-4-5 { width: 58%; aspect-ratio: 4/5; height: auto; }
+  .crop-frame.ratio-9-16 { width: 50%; aspect-ratio: 9/16; height: auto; }
+  .crop-frame.ratio-16-9 { width: 85%; aspect-ratio: 16/9; height: auto; }
+  .crop-grid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
+  .crop-grid > div { border: 0.5px solid rgba(255,255,255,0.25); }
+  .crop-handle {
+    position: absolute;
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .crop-handle.tl { top: -6px; left: -6px; }
+  .crop-handle.tr { top: -6px; right: -6px; }
+  .crop-handle.bl { bottom: -6px; left: -6px; }
+  .crop-handle.br { bottom: -6px; right: -6px; }
+
+  .ratio-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .ratio-pill {
+    font-size: 11px;
+    padding: 7px 14px;
+    border-radius: 22px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ratio-pill:hover { border-color: #999; color: #555; }
+  .ratio-pill.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+
+  .crop-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .crop-action-btn {
+    font-size: 11px;
+    padding: 7px 16px;
+    border-radius: 22px;
+    border: 1px solid #ddd;
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .crop-action-btn:hover { border-color: #999; color: #555; }
+
+  /* ═══ UPLOAD CENTRE OVERLAY ═══ */
+  .upload-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+  }
+  .upload-overlay.open { display: flex; }
+  .upload-panel {
+    width: 700px;
+    max-width: 95vw;
+    max-height: 85vh;
+    background: #f5f3f0;
+    border-radius: 16px;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .upload-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e8e6e2;
+  }
+  .upload-title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+  .upload-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .upload-drop {
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 300;
+    margin-bottom: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .upload-drop:hover { border-color: #999; color: #999; }
+  .upload-drop .plus { display: block; font-size: 32px; font-weight: 200; color: #ccc; margin-bottom: 8px; }
+  .upload-staging {
+    margin-bottom: 20px;
+  }
+  .upload-staging-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 10px;
+  }
+  .upload-staging-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  .upload-staging-thumb {
+    aspect-ratio: 1;
+    background: #e8e6e2;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #bbb;
+    cursor: grab;
+  }
+  .upload-folders-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 12px;
+    margin-top: 4px;
+  }
+  .upload-folder-group {
+    margin-bottom: 16px;
+  }
+  .upload-folder-group-title {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+  .upload-folder-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .upload-folder-pill {
+    font-size: 11px;
+    padding: 7px 16px;
+    border-radius: 22px;
+    border: 1.5px dashed #ddd;
+    background: white;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .upload-folder-pill:hover { border-color: #999; border-style: solid; color: #555; }
+  .upload-folder-pill .folder-count {
+    font-size: 9px;
+    background: #eae8e4;
+    color: #999;
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-left: 5px;
+  }
+  .upload-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e8e6e2;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  /* ═══ RIL BROWSER OVERLAY ═══ */
+  .ril-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    backdrop-filter: blur(4px);
+    justify-content: center;
+    align-items: center;
+  }
+  .ril-overlay.open { display: flex; }
+  .ril-panel {
+    width: 800px;
+    max-width: 95vw;
+    max-height: 85vh;
+    background: #f5f3f0;
+    border-radius: 16px;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .ril-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e8e6e2;
+  }
+  .ril-search {
+    flex: 1;
+    margin: 0 16px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    background: white;
+    font-size: 12px;
+    font-family: inherit;
+    color: #555;
+    outline: none;
+  }
+  .ril-search::placeholder { color: #bbb; }
+  .ril-search:focus { border-color: #999; }
+  .ril-type-toggle {
+    display: flex;
+    gap: 0;
+    background: #eae8e4;
+    border-radius: 16px;
+    padding: 2px;
+  }
+  .ril-type-btn {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 14px;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ril-type-btn.active { background: white; color: #1a1a1a; font-weight: 500; }
+  .ril-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  .ril-sidebar {
+    width: 200px;
+    border-right: 1px solid #e8e6e2;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .ril-folder-group {
+    margin-bottom: 16px;
+  }
+  .ril-folder-group-title {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+  .ril-folder-item {
+    font-size: 12px;
+    color: #888;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 300;
+    margin-bottom: 3px;
+  }
+  .ril-folder-item:hover { background: #eae8e4; color: #555; }
+  .ril-folder-item.active { background: #1a1a1a; color: white; font-weight: 400; }
+  .ril-folder-item .count {
+    float: right;
+    font-size: 9px;
+    color: #bbb;
+  }
+  .ril-folder-item.active .count { color: rgba(255,255,255,0.5); }
+  .ril-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  .ril-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .ril-thumb {
+    aspect-ratio: 9/16;
+    background: #e8e6e2;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #bbb;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .ril-thumb:hover { border-color: #999; }
+  .ril-thumb-tags {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    right: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .ril-thumb-tag {
+    font-size: 7px;
+    padding: 1px 5px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+  }
+  .ril-empty {
+    text-align: center;
+    color: #ccc;
+    font-size: 12px;
+    font-weight: 300;
+    padding: 60px 20px;
+  }
+
+  /* ═══ POST-RENDER SPLIT VIEW ═══ */
+  .post-render {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: #f5f3f0;
+  }
+  .post-render.open { display: grid; grid-template-columns: 1fr 380px; }
+
+  .post-render-preview {
+    background: #e8e6e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .post-render-img {
+    width: 340px;
+    height: 580px;
+    background: #ADD8E6;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    letter-spacing: 1px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  }
+  .post-render-nav {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .post-render-nav-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    font-size: 14px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.15s;
+  }
+  .post-render-nav-btn:hover { border-color: #999; color: #333; }
+  .post-render-counter {
+    font-size: 10px;
+    color: #999;
+    letter-spacing: 1px;
+    min-width: 40px;
+    text-align: center;
+  }
+  .post-render-filename {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 10px;
+    color: #999;
+    font-weight: 300;
+  }
+  /* Brush button on post-render preview */
+  .post-render-brush {
+    position: absolute;
+    top: 20px; right: 20px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .post-render-brush:hover { border-color: #999; color: #333; }
+  .post-render-brush.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+  .post-render-compare {
+    position: absolute;
+    top: 20px; left: 20px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    color: #888;
+    cursor: pointer;
+  }
+  .post-render-compare:hover { border-color: #999; color: #333; }
+
+  .post-render-controls {
+    padding: 28px 24px;
+    overflow-y: auto;
+    border-left: 1px solid #e8e6e2;
+  }
+  .post-render-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .post-render-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+  .post-render-close {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 13px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    color: #bbb;
+  }
+  .post-render-close:hover { border-color: #999; color: #555; }
+  .post-render-divider {
+    height: 1px;
+    background: #e8e6e2;
+    margin: 20px 0;
+  }
+  .post-render-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .post-render-actions .render-btn { flex: 1; text-align: center; }
+  .post-render-actions .export-btn { flex: 1; justify-content: center; }
+
+  /* ═══ ENHANCED POST-RENDER PREVIEW AREA ═══ */
+
+  /* Image wrapper with rounded top corners */
+  .preview-img-wrap {
+    width: 340px;
+    max-height: 68vh;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+    box-shadow: 0 -4px 40px rgba(0,0,0,0.1);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  /* Amendments area — flush below image */
+  .preview-prompt-area {
+    width: 340px;
+    background: white;
+    border-radius: 0 0 16px 16px;
+    padding: 14px 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+  }
+  .preview-prompt-label {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .preview-prompt-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e8e6e2;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: inherit;
+    color: #555;
+    resize: none;
+    min-height: 44px;
+    background: #fafaf8;
+    line-height: 1.4;
+  }
+  .preview-prompt-input::placeholder { color: #ccc; font-style: italic; font-weight: 300; }
+  .preview-prompt-input:focus { outline: none; border-color: #ccc; background: white; }
+  .preview-prompt-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  .preview-prompt-hint {
+    font-size: 9px;
+    color: #ccc;
+    font-weight: 300;
+    font-style: italic;
+  }
+  .preview-prompt-apply {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 18px;
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .preview-prompt-apply:hover { background: #333; }
+
+  /* History bar — top-right of preview */
+  .history-bar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+  }
+  .history-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: white;
+    border-radius: 20px;
+    padding: 3px 6px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .history-btn {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    line-height: 26px;
+    text-align: center;
+    cursor: pointer;
+    color: #aaa;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .history-btn:hover { color: #333; background: #f0eeea; }
+  .history-btn.disabled { opacity: 0.25; pointer-events: none; }
+  .history-counter {
+    font-size: 9px;
+    color: #999;
+    letter-spacing: 0.5px;
+    padding: 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .history-label-btn {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .history-label-btn:hover { border-color: #999; color: #333; }
+
+  /* History panel dropdown */
+  .history-panel {
+    position: absolute;
+    top: 56px;
+    right: 20px;
+    width: 260px;
+    max-height: 60vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    z-index: 20;
+  }
+  .history-panel.open { display: flex; }
+  .history-panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .history-panel-title {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: 500;
+  }
+  .history-panel-close {
+    font-size: 12px;
+    color: #ccc;
+    cursor: pointer;
+  }
+  .history-panel-close:hover { color: #888; }
+  .history-stats {
+    padding: 8px 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    gap: 12px;
+    font-size: 9px;
+    color: #bbb;
+  }
+  .history-stats span { font-weight: 500; }
+  .history-stats .exported-count span { color: #5aa76a; }
+  .history-filters {
+    display: flex;
+    gap: 4px;
+    padding: 8px 16px 4px;
+  }
+  .history-filter {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid #e8e6e2;
+    background: white;
+    color: #bbb;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .history-filter:hover { border-color: #ccc; color: #888; }
+  .history-filter.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+  .history-list {
+    overflow-y: auto;
+    padding: 8px;
+    list-style: none;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .history-item:hover { background: #f8f7f5; }
+  .history-item.active { background: #f0eeea; }
+  .history-thumb-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .history-thumb {
+    width: 36px;
+    height: 62px;
+    border-radius: 4px;
+    background: #ADD8E6;
+    border: 1px solid #e0e0e0;
+  }
+  .history-item.active .history-thumb { border-color: #1a1a1a; border-width: 2px; }
+  .history-exported-badge {
+    position: absolute;
+    top: -3px; right: -3px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #5aa76a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .history-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .history-meta-label {
+    font-size: 10px;
+    color: #555;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .history-meta-time {
+    font-size: 9px;
+    color: #bbb;
+    font-weight: 300;
+    margin-top: 2px;
+  }
+  .history-meta-tag {
+    font-size: 8px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    background: #eae8e4;
+    color: #999;
+    display: inline-block;
+    margin-top: 3px;
+  }
+  .history-meta-tag.exported { background: #e8f5e9; color: #5aa76a; }
+  .history-meta-tag.amendment { background: #fff3e0; color: #d4a846; }
+  .history-meta-tag.rerender { background: #e3f2fd; color: #5588bb; }
+  .history-export-btn {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 10px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    color: #ccc;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    opacity: 0;
+  }
+  .history-item:hover .history-export-btn { opacity: 1; }
+  .history-export-btn:hover { border-color: #5aa76a; color: #5aa76a; background: #f0faf2; }
+
+  /* Pill buttons — top-left of preview */
+  .preview-tl {
+    position: absolute;
+    top: 20px; left: 20px;
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+  .pill-btn {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .pill-btn:hover { border-color: #999; color: #333; }
+  .pill-btn.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+
+  /* Brush panel — top-left dropdown */
+  .brush-panel {
+    position: absolute;
+    top: 56px; left: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    width: 220px;
+    display: none;
+    z-index: 20;
+  }
+  .brush-panel.open { display: block; }
+  .brush-panel-title {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 10px;
+  }
+  .brush-size-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .brush-size-row label { font-size: 10px; color: #777; font-weight: 300; min-width: 28px; }
+  .brush-size-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 2px;
+    background: #ddd;
+    border-radius: 1px;
+    outline: none;
+  }
+  .brush-size-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    cursor: pointer;
+  }
+  .brush-dot-preview {
+    width: 24px; height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .brush-dot {
+    border-radius: 50%;
+    background: rgba(26,26,26,0.25);
+    border: 1.5px solid #1a1a1a;
+    transition: all 0.1s;
+  }
+  .brush-textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: inherit;
+    color: #555;
+    resize: none;
+    min-height: 36px;
+  }
+  .brush-textarea::placeholder { color: #bbb; font-style: italic; }
+  .brush-apply {
+    margin-top: 8px;
+    width: 100%;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 0;
+    background: #1a1a1a;
+    color: #f5f3f0;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .brush-apply:hover { background: #333; }
+
+  /* Bottom bar — filename + prev/next */
+  .preview-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+  }
+  .preview-filename {
+    font-size: 10px;
+    color: #999;
+    font-weight: 300;
+  }
+  .preview-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .nav-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: white;
+    font-size: 14px;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .nav-btn:hover { border-color: #999; color: #333; }
+  .nav-counter {
+    font-size: 10px;
+    color: #999;
+    letter-spacing: 1px;
+    min-width: 40px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header-row">
+    <div>
+      <div class="logo">JewelRender</div>
+      <div class="tagline">Batch jewelry rendering · ComfyUI · Mac Mini M4</div>
+    </div>
+  </div>
+
+  <!-- Top Navigation: Workspace / Upload Centre / RIL Browser -->
+  <div class="top-nav">
+    <div class="top-nav-btn active" onclick="switchTopNav(&#39;workspace&#39;)">Workspace</div>
+    <div class="top-nav-btn" onclick="switchTopNav(&#39;upload&#39;)">Upload Centre</div>
+    <div class="top-nav-btn" onclick="switchTopNav(&#39;ril&#39;)">RIL Browser</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- WORKSPACE VIEW -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="top-nav-view active" id="view-workspace">
+
+  <!-- Preset Tabs -->
+  <div class="tabs" id="presetTabs">
+    <div class="tab active" onclick="switchPreset(&#39;coolblue&#39;)">Cool Blue</div>
+    <div class="tab" onclick="switchPreset(&#39;whiteretail&#39;)">White Retail</div>
+    <div class="tab" onclick="switchPreset(&#39;yashica&#39;)">Yashica Film</div>
+    <div class="tab" onclick="switchPreset(&#39;settings&#39;)">Settings</div>
+    <div class="tab-add" onclick="addPreset()" title="Add new preset">+</div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="layout">
+
+    <!-- Left: Queue -->
+    <div>
+      <div class="queue-label">Image Queue</div>
+      <div class="drop-zone">
+        <span class="plus">+</span>
+        Drop images here
+      </div>
+      <div class="queue-actions">
+        <div class="btn-sm">Add</div>
+        <div class="btn-sm">Folder</div>
+        <div class="btn-sm">Clear</div>
+      </div>
+      <ul class="file-list">
+        <li><span style="cursor:pointer" onclick="openEditor(&#39;gold_pendant_001.jpg&#39;)">gold_pendant_001.jpg</span><div class="feedback"><div class="fb-btn positive">+</div><div class="fb-btn negative">−</div></div></li>
+        <li><span style="cursor:pointer" onclick="openEditor(&#39;gold_pendant_002.jpg&#39;)">gold_pendant_002.jpg</span><div class="feedback"><div class="fb-btn positive">+</div><div class="fb-btn negative">−</div></div></li>
+        <li class="active"><span style="cursor:pointer" onclick="openEditor(&#39;diamond_ring_front.png&#39;)">diamond_ring_front.png</span><div class="feedback"><div class="fb-btn positive approved">+</div><div class="fb-btn negative">−</div></div></li>
+        <li><span style="cursor:pointer" onclick="openEditor(&#39;diamond_ring_side.png&#39;)">diamond_ring_side.png</span><div class="feedback"><div class="fb-btn positive">+</div><div class="fb-btn negative">−</div></div></li>
+        <li><span style="cursor:pointer" onclick="openEditor(&#39;emerald_necklace.png&#39;)">emerald_necklace.png</span><div class="feedback"><div class="fb-btn positive">+</div><div class="fb-btn negative rejected">−</div></div></li>
+        <li><span style="cursor:pointer" onclick="openEditor(&#39;ruby_earrings_pair.jpg&#39;)">ruby_earrings_pair.jpg</span><div class="feedback"><div class="fb-btn positive approved">+</div><div class="fb-btn negative">−</div></div></li>
+        <li><span style="cursor:pointer" onclick="openEditor(&#39;rose_gold_watch.png&#39;)">rose_gold_watch.png</span><div class="feedback"><div class="fb-btn positive">+</div><div class="fb-btn negative">−</div></div></li>
+      </ul>
+      <div class="file-count">7 images</div>
+      <div class="feedback-stats">
+        <div class="fb-stat pos"><span>2</span> approved</div>
+        <div class="fb-stat neg"><span>1</span> rejected</div>
+      </div>
+    </div>
+
+    <!-- Right: Content -->
+    <div>
+
+      <!-- ═══ COOL BLUE ═══ -->
+      <div class="tab-content active" id="tab-coolblue">
+
+        <div class="preset-manage">
+          <input class="preset-name-edit" value="Cool Blue">
+          <div class="btn-sm">Duplicate</div>
+          <div class="btn-sm danger">Delete</div>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="mode-bar" data-preset="coolblue">
+          <div class="mode-btn active" onclick="switchMode(&#39;coolblue&#39;,&#39;edit&#39;)">Edit</div>
+          <div class="mode-btn" onclick="switchMode(&#39;coolblue&#39;,&#39;generate&#39;)">Generate</div>
+          <div class="mode-btn" onclick="switchMode(&#39;coolblue&#39;,&#39;video&#39;)">360 Video</div>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div class="mode-content active" id="coolblue-edit">
+          <div class="section">
+            <div class="section-title">Background</div>
+            <div class="field">
+              <div class="swatch-row">
+                <div class="swatch" style="background:#ADD8E6;"></div>
+                <span class="field-value">Baby Blue</span>
+              </div>
+              <span class="field-label">173, 216, 230</span>
+            </div>
+          </div>
+
+          <!-- NEW: Metal Type -->
+          <div class="section">
+            <div class="section-title">Metal Type</div>
+            <div class="toggle-pills" id="metalPills">
+              <div class="toggle-pill active" onclick="selectMetal(this,&#39;wg&#39;)"><span class="metal-dot wg"></span>White Gold</div>
+              <div class="toggle-pill" onclick="selectMetal(this,&#39;yg&#39;)"><span class="metal-dot yg"></span>Yellow Gold</div>
+              <div class="toggle-pill" onclick="selectMetal(this,&#39;rg&#39;)"><span class="metal-dot rg"></span>Rose Gold</div>
+            </div>
+            <div class="karat-row" id="karatRow">
+              <div class="karat-pill" onclick="selectKarat(this)">10k</div>
+              <div class="karat-pill active" onclick="selectKarat(this)">14k</div>
+              <div class="karat-pill" onclick="selectKarat(this)">18k</div>
+            </div>
+          </div>
+
+          <!-- NEW: Gemstone -->
+          <div class="section">
+            <div class="section-title">Gemstone</div>
+            <div class="toggle-pills" id="gemPills">
+              <div class="toggle-pill active" onclick="selectGem(this)"><span class="gem-dot diamond"></span>Diamond</div>
+              <div class="toggle-pill" onclick="selectGem(this)"><span class="gem-dot ruby"></span>Ruby</div>
+              <div class="toggle-pill" onclick="selectGem(this)"><span class="gem-dot sapphire-blue"></span>Sapphire</div>
+              <div class="toggle-pill" onclick="selectGem(this)"><span class="gem-dot emerald"></span>Emerald</div>
+              <div class="toggle-pill" onclick="selectGem(this)"><span class="gem-dot pearl"></span>Pearl</div>
+            </div>
+            <!-- Sapphire sub-colors (shown when sapphire selected) -->
+            <div class="karat-row" id="sapphireColors" style="display:none;">
+              <div class="karat-pill active" onclick="selectKarat(this)">Blue</div>
+              <div class="karat-pill" onclick="selectKarat(this)">Pink</div>
+              <div class="karat-pill" onclick="selectKarat(this)">Yellow</div>
+              <div class="karat-pill" onclick="selectKarat(this)">White</div>
+            </div>
+          </div>
+
+          <!-- NEW: Product Type -->
+          <div class="section">
+            <div class="section-title">Product Type</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)">Ring</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Necklace</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Bracelet</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Earrings</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Watch</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Grillz</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Soft Light</div>
+            <div class="slider-row">
+              <span class="field-label">Intensity</span>
+              <div class="slider-track">
+                <div class="slider-fill" style="width:35%"></div>
+                <div class="slider-dot" style="left:calc(35% - 5px)"></div>
+              </div>
+              <span class="slider-val">35%</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Placement</div>
+            <div class="field">
+              <span class="field-label">Scale</span>
+              <span class="field-value">0.60</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Position</span>
+              <span class="select-pill">Center</span>
+            </div>
+          </div>
+
+          <!-- Re-render button -->
+          <button class="render-btn" style="width:100%;text-align:center;" onclick="reRenderWithChanges()">Re-render with Changes</button>
+          <div style="font-size:9px;color:#ccc;margin-top:6px;font-weight:300;font-style:italic;text-align:center;">Change metal, karat, or gemstone above — then re-render to apply</div>
+        </div>
+        <div class="mode-content" id="coolblue-generate">
+          <div class="section">
+            <div class="section-title">Prompt</div>
+            <textarea class="text-area" placeholder="e.g., invisible setting white gold diamond ring on soft baby blue background, product photography, soft diffused light..." style="min-height:72px;"></textarea>
+            <div class="ref-note">Words map to RIL folders — type material, gemstone, product type, or setting style</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Reference Image (optional)</div>
+            <div class="ref-area">
+              <span class="icon">+</span>
+              Upload a reference to guide generation
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Background</div>
+            <div class="field">
+              <div class="swatch-row">
+                <div class="swatch" style="background:#ADD8E6;"></div>
+                <span class="field-value">Baby Blue</span>
+              </div>
+              <span class="field-label">173, 216, 230</span>
+            </div>
+          </div>
+
+          <!-- Metal & Gemstone in Generate too -->
+          <div class="section">
+            <div class="section-title">Metal Type</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)"><span class="metal-dot wg"></span>White Gold</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="metal-dot yg"></span>Yellow Gold</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="metal-dot rg"></span>Rose Gold</div>
+            </div>
+            <div class="karat-row">
+              <div class="karat-pill" onclick="selectKarat(this)">10k</div>
+              <div class="karat-pill active" onclick="selectKarat(this)">14k</div>
+              <div class="karat-pill" onclick="selectKarat(this)">18k</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Gemstone</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)"><span class="gem-dot diamond"></span>Diamond</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot ruby"></span>Ruby</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot sapphire-blue"></span>Sapphire</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot emerald"></span>Emerald</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot pearl"></span>Pearl</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Generation Settings</div>
+            <div class="field"><span class="field-label">Steps</span><span class="field-value">30</span></div>
+            <div class="field"><span class="field-label">CFG Scale</span><span class="field-value">7.0</span></div>
+            <div class="field"><span class="field-label">Denoise</span><span class="field-value">1.00</span></div>
+          </div>
+        </div>
+
+        <!-- 360 VIDEO MODE -->
+        <div class="mode-content" id="coolblue-video">
+          <div class="section">
+            <div class="section-title">Generate Views from Approved Image</div>
+            <div class="ref-area" style="margin-bottom:12px;">
+              <span class="icon">+</span>
+              Drop an approved image to generate views
+            </div>
+            <div class="ref-note">AI generates anatomically identical side, top, and lower views</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Key Angles</div>
+            <div class="angle-grid">
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Front</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Side</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">3/4 View</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Top</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Lower</div></div>
+            </div>
+            <div style="font-size:10px;color:#bbb;font-style:italic;font-weight:300;">
+              AI fills in all frames between key angles for smooth rotation
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Video Settings</div>
+            <div class="field"><span class="field-label">Duration</span><span class="field-value">3s</span></div>
+            <div class="field"><span class="field-label">FPS</span><span class="field-value">24</span></div>
+            <div class="field"><span class="field-label">Loop</span><span class="select-pill">Seamless</span></div>
+            <div class="field"><span class="field-label">Model</span><span class="select-pill">SV3D_p</span></div>
+          </div>
+
+          <!-- Video Export Aspect Ratio -->
+          <div class="section">
+            <div class="section-title">Export Aspect Ratio</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)">9:16 Story</div>
+              <div class="toggle-pill" onclick="selectPill(this)">1:1 Square</div>
+              <div class="toggle-pill" onclick="selectPill(this)">4:5 Post</div>
+            </div>
+          </div>
+
+          <!-- Video Recede -->
+          <div class="recede-section">
+            <div class="recede-label-row">
+              <span class="recede-title">Video Recede</span>
+              <span class="recede-val">0%</span>
+            </div>
+            <div class="recede-wrap">
+              <input type="range" class="recede-slider" min="0" max="50" value="0" oninput="updateRecede(this)">
+            </div>
+            <div class="recede-hint">Pull object back in frame — AI regenerates all video frames</div>
+            <button class="recede-btn" onclick="executeRecede(this)">Recede</button>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Background</div>
+            <div class="field">
+              <div class="swatch-row">
+                <div class="swatch" style="background:#ADD8E6;"></div>
+                <span class="field-value">Baby Blue</span>
+              </div>
+              <span class="field-label">173, 216, 230</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Recede (still images) -->
+        <div class="recede-section">
+          <div class="recede-label-row">
+            <span class="recede-title">Recede</span>
+            <span class="recede-val">0%</span>
+          </div>
+          <div class="recede-wrap">
+            <input type="range" class="recede-slider" min="0" max="50" value="0" oninput="updateRecede(this)">
+          </div>
+          <div class="recede-hint">Pull object back in frame — AI extends background via outpainting</div>
+          <button class="recede-btn" onclick="executeRecede(this)">Recede</button>
+        </div>
+
+        <!-- Per-preset Adjust -->
+        <div class="section">
+          <div class="section-title">Adjust</div>
+          <div class="edit-slider-row">
+            <span class="edit-slider-label">Temperature</span>
+            <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+            <span class="edit-slider-val">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <span class="edit-slider-label">Saturation</span>
+            <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+            <span class="edit-slider-val">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <span class="edit-slider-label">Contrast</span>
+            <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+            <span class="edit-slider-val">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <span class="edit-slider-label">Sharpness</span>
+            <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+            <span class="edit-slider-val">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <span class="edit-slider-label">Grain</span>
+            <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+            <span class="edit-slider-val">0</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Reference Image Library -->
+        <div class="section">
+          <div class="section-title">Reference Image Library</div>
+          <div class="ref-area" onclick="switchTopNav(&#39;ril&#39;)">
+            <span class="icon">+</span>
+            Open RIL Browser to manage references
+          </div>
+          <div class="ref-thumbs">
+            <div class="ref-thumb"><div class="remove">×</div></div>
+            <div class="ref-thumb"><div class="remove">×</div></div>
+            <div class="ref-thumb"><div class="remove">×</div></div>
+          </div>
+          <div class="ref-note">Exported images auto-deposit into RIL folders</div>
+        </div>
+      </div>
+
+      <!-- ═══ WHITE RETAIL ═══ -->
+      <div class="tab-content" id="tab-whiteretail">
+        <div class="preset-manage">
+          <input class="preset-name-edit" value="White Retail">
+          <div class="btn-sm">Duplicate</div>
+          <div class="btn-sm danger">Delete</div>
+        </div>
+        <div class="mode-bar" data-preset="whiteretail">
+          <div class="mode-btn active" onclick="switchMode(&#39;whiteretail&#39;,&#39;edit&#39;)">Edit</div>
+          <div class="mode-btn" onclick="switchMode(&#39;whiteretail&#39;,&#39;generate&#39;)">Generate</div>
+          <div class="mode-btn" onclick="switchMode(&#39;whiteretail&#39;,&#39;video&#39;)">360 Video</div>
+        </div>
+        <div class="mode-content active" id="whiteretail-edit">
+          <div class="section">
+            <div class="section-title">Background</div>
+            <div class="field">
+              <div class="swatch-row">
+                <div class="swatch" style="background:#fff;border-color:rgba(0,0,0,0.12);"></div>
+                <span class="field-value">Pure White</span>
+              </div>
+              <span class="field-label">255, 255, 255</span>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">Metal Type</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)"><span class="metal-dot wg"></span>White Gold</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="metal-dot yg"></span>Yellow Gold</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="metal-dot rg"></span>Rose Gold</div>
+            </div>
+            <div class="karat-row">
+              <div class="karat-pill" onclick="selectKarat(this)">10k</div>
+              <div class="karat-pill active" onclick="selectKarat(this)">14k</div>
+              <div class="karat-pill" onclick="selectKarat(this)">18k</div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">Gemstone</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)"><span class="gem-dot diamond"></span>Diamond</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot ruby"></span>Ruby</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot sapphire-blue"></span>Sapphire</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot emerald"></span>Emerald</div>
+              <div class="toggle-pill" onclick="selectPill(this)"><span class="gem-dot pearl"></span>Pearl</div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">Product Type</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)">Ring</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Necklace</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Bracelet</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Earrings</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Watch</div>
+              <div class="toggle-pill" onclick="selectPill(this)">Grillz</div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">Placement</div>
+            <div class="field"><span class="field-label">Scale</span><span class="field-value">0.60</span></div>
+            <div class="field"><span class="field-label">Position</span><span class="select-pill">Center</span></div>
+          </div>
+
+          <!-- Re-render button -->
+          <button class="render-btn" style="width:100%;text-align:center;" onclick="reRenderWithChanges()">Re-render with Changes</button>
+          <div style="font-size:9px;color:#ccc;margin-top:6px;font-weight:300;font-style:italic;text-align:center;">Change metal, karat, or gemstone above — then re-render to apply</div>
+        </div>
+        <div class="mode-content" id="whiteretail-generate">
+          <div class="section">
+            <div class="section-title">Prompt</div>
+            <textarea class="text-area" placeholder="e.g., jewelry product on pure white background, clean retail photography..." style="min-height:64px;"></textarea>
+          </div>
+          <div class="section">
+            <div class="section-title">Generation Settings</div>
+            <div class="field"><span class="field-label">Steps</span><span class="field-value">30</span></div>
+            <div class="field"><span class="field-label">CFG Scale</span><span class="field-value">7.0</span></div>
+          </div>
+        </div>
+        <div class="mode-content" id="whiteretail-video">
+          <div class="section">
+            <div class="section-title">Key Angles</div>
+            <div class="angle-grid">
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Front</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Side</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">3/4 View</div></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-title">Export Aspect Ratio</div>
+            <div class="toggle-pills">
+              <div class="toggle-pill active" onclick="selectPill(this)">9:16 Story</div>
+              <div class="toggle-pill" onclick="selectPill(this)">1:1 Square</div>
+              <div class="toggle-pill" onclick="selectPill(this)">4:5 Post</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="recede-section">
+          <div class="recede-label-row"><span class="recede-title">Recede</span><span class="recede-val">0%</span></div>
+          <div class="recede-wrap"><input type="range" class="recede-slider" min="0" max="50" value="0" oninput="updateRecede(this)"></div>
+          <div class="recede-hint">Pull object back in frame — AI extends background</div>
+          <button class="recede-btn" onclick="executeRecede(this)">Recede</button>
+        </div>
+        <div class="section">
+          <div class="section-title">Adjust</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Temperature</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Saturation</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Contrast</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Sharpness</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Grain</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+          <div class="section-title">Reference Image Library</div>
+          <div class="ref-area" onclick="switchTopNav(&#39;ril&#39;)"><span class="icon">+</span>Open RIL Browser</div>
+          <div class="ref-note">Specs designated by retail partners</div>
+        </div>
+      </div>
+
+      <!-- ═══ YASHICA FILM ═══ -->
+      <div class="tab-content" id="tab-yashica">
+        <div class="preset-manage">
+          <input class="preset-name-edit" value="Yashica Film">
+          <div class="btn-sm">Duplicate</div>
+          <div class="btn-sm danger">Delete</div>
+        </div>
+        <div class="mode-bar" data-preset="yashica">
+          <div class="mode-btn" onclick="switchMode(&#39;yashica&#39;,&#39;edit&#39;)">Edit</div>
+          <div class="mode-btn active" onclick="switchMode(&#39;yashica&#39;,&#39;generate&#39;)">Generate</div>
+          <div class="mode-btn" onclick="switchMode(&#39;yashica&#39;,&#39;video&#39;)">360 Video</div>
+        </div>
+        <div class="mode-content" id="yashica-edit">
+          <div class="section">
+            <div class="section-title">Film Processing</div>
+            <div class="check-row"><div class="check on"></div>Film post-processing enabled</div>
+            <div class="tags">
+              <span class="tag">warm tones</span><span class="tag">lifted blacks</span><span class="tag">subtle grain</span>
+              <span class="tag">soft vignette</span><span class="tag">halation</span><span class="tag">zeiss character</span>
+            </div>
+          </div>
+        </div>
+        <div class="mode-content active" id="yashica-generate">
+          <div class="section">
+            <div class="section-title">Prompt / Style Notes</div>
+            <textarea class="text-area" placeholder="e.g., outdoor natural light, studio backdrop, elegant pose..." style="min-height:64px;"></textarea>
+          </div>
+          <div class="section">
+            <div class="section-title">Yashica T4 · Carl Zeiss T*</div>
+            <div class="check-row"><div class="check on"></div>Film post-processing enabled</div>
+            <div class="tags">
+              <span class="tag">warm tones</span><span class="tag">lifted blacks</span><span class="tag">subtle grain</span>
+              <span class="tag">soft vignette</span><span class="tag">halation</span><span class="tag">zeiss character</span>
+            </div>
+          </div>
+        </div>
+        <div class="mode-content" id="yashica-video">
+          <div class="section">
+            <div class="section-title">Key Angles</div>
+            <div class="angle-grid">
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Front</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">Side</div></div>
+              <div class="angle-slot"><span class="plus">+</span><div class="angle-label">3/4 View</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="recede-section">
+          <div class="recede-label-row"><span class="recede-title">Recede</span><span class="recede-val">0%</span></div>
+          <div class="recede-wrap"><input type="range" class="recede-slider" min="0" max="50" value="0" oninput="updateRecede(this)"></div>
+          <div class="recede-hint">Pull object back in frame</div>
+          <button class="recede-btn" onclick="executeRecede(this)">Recede</button>
+        </div>
+        <div class="section">
+          <div class="section-title">Adjust</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Temperature</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Saturation</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Contrast</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Sharpness</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Grain</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+          <div class="section-title">Reference Image Library</div>
+          <div class="ref-area" onclick="switchTopNav(&#39;ril&#39;)"><span class="icon">+</span>Drop film style examples + model photos here</div>
+        </div>
+      </div>
+
+      <!-- ═══ SETTINGS ═══ -->
+      <div class="tab-content" id="tab-settings">
+        <div class="section">
+          <div class="section-title">ComfyUI · Mac Mini M4</div>
+          <div class="field"><span class="field-label">Host</span><span class="field-value">127.0.0.1</span></div>
+          <div class="field"><span class="field-label">Port</span><span class="field-value">8188</span></div>
+          <div class="conn-row">
+            <div class="btn-sm">Test Connection</div>
+            <div class="dot-status"></div>
+            <span class="conn-label">Not connected</span>
+          </div>
+        </div>
+        <div class="section" style="margin-top:24px;">
+          <div class="section-title">Checkpoint</div>
+          <div class="field"><span class="field-value" style="font-size:11px;color:#888;">sd_xl_base_1.0.safetensors</span></div>
+        </div>
+        <div class="section">
+          <div class="section-title">Output</div>
+          <div class="field"><span class="field-label">Dimensions</span><span class="field-value">1170 × 2532</span></div>
+          <div class="field"><span class="field-label">Format</span><span class="field-value">JPEG · 95</span></div>
+          <div class="field"><span class="field-label">Ratio</span><span class="field-value" style="color:#999;">iPhone portrait</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+          <div class="section-title">Video Output</div>
+          <div class="field"><span class="field-label">Format</span><span class="field-value">MP4</span></div>
+          <div class="field"><span class="field-label">Video Model</span><span class="select-pill">SV3D_p</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+          <div class="section-title">RIL &amp; Export</div>
+          <div class="field"><span class="field-label">Auto-deposit exports to RIL</span><div class="check on"></div></div>
+          <div class="field"><span class="field-label">Auto-file by material/gem/type</span><div class="check on"></div></div>
+          <div class="field"><span class="field-label">Parameter logging on +/−</span><div class="check on"></div></div>
+          <div class="field"><span class="field-label">RIL image count</span><span class="field-value" style="font-size:11px;color:#888;">47 images · 8 videos</span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section">
+          <div class="section-title">Setting Styles (RIL)</div>
+          <div class="toggle-pills">
+            <div class="toggle-pill">Invisible</div>
+            <div class="toggle-pill">Prong</div>
+            <div class="toggle-pill">Bezel</div>
+            <div class="toggle-pill">Channel</div>
+            <div class="toggle-pill">Pave</div>
+            <div class="toggle-pill">Tension</div>
+            <div class="toggle-pill" style="border-style:dashed;color:#ccc;">+ Add</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom">
+    <div class="bottom-left">
+      <span class="active-label">Style</span>
+      <span class="select-pill" id="activeStyle">Cool Blue</span>
+      <span class="active-mode" id="activeMode">· Edit</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="render-btn" id="renderBtn">Render All</button>
+      <button class="export-btn" onclick="exportImages()"><span class="export-icon">↓</span> Export</button>
+    </div>
+  </div>
+  <div class="export-row" style="margin-top:12px;justify-content:flex-end;">
+    <span class="export-path">↓ <span id="exportPath" onclick="changeExportFolder()">~/Desktop/JewelRender Exports</span></span>
+  </div>
+  <div class="progress-track"><div class="progress-fill"></div></div>
+  <div class="status">Ready</div>
+
+  </div><!-- /view-workspace -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- UPLOAD CENTRE VIEW -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="top-nav-view" id="view-upload">
+
+    <div style="margin-bottom:24px;">
+      <div class="section-title" style="font-size:12px;letter-spacing:2px;margin-bottom:4px;">Upload Centre</div>
+      <div style="font-size:11px;color:#999;font-weight:300;">Upload reference photos and sort them into RIL folders. AI learns from your examples.</div>
+    </div>
+
+    <!-- Upload drop zone -->
+    <div class="upload-drop">
+      <span class="plus">+</span>
+      Drop photos here to upload
+      <div style="font-size:10px;color:#ccc;margin-top:6px;">Drag uploaded images into folders below to teach the AI</div>
+    </div>
+
+    <!-- Staging area -->
+    <div class="upload-staging">
+      <div class="upload-staging-title">Uploaded — drag to folders below <span style="color:#bbb;">(6 images)</span></div>
+      <div class="upload-staging-grid">
+        <div class="upload-staging-thumb">IMG_01</div>
+        <div class="upload-staging-thumb">IMG_02</div>
+        <div class="upload-staging-thumb">IMG_03</div>
+        <div class="upload-staging-thumb">IMG_04</div>
+        <div class="upload-staging-thumb">IMG_05</div>
+        <div class="upload-staging-thumb">IMG_06</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- AI Suggestion Banner -->
+    <div style="background:#f0f8f0;border:1px solid #c8e6c9;border-radius:8px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#5aa76a;font-weight:500;margin-bottom:2px;">AI Suggestions Ready</div>
+        <div style="font-size:11px;color:#777;font-weight:300;">3 images recognized — confirm or adjust folder tags</div>
+      </div>
+      <div class="btn-sm" style="border-color:#7ec88b;color:#5aa76a;">Review</div>
+    </div>
+
+    <!-- Folder targets -->
+    <div class="upload-folders-title">RIL Folders — drop images to sort</div>
+
+    <div class="upload-folder-group">
+      <div class="upload-folder-group-title">Materials</div>
+      <div class="upload-folder-pills">
+        <div class="upload-folder-pill">White Gold <span class="folder-count">12</span></div>
+        <div class="upload-folder-pill">Yellow Gold <span class="folder-count">8</span></div>
+        <div class="upload-folder-pill">Rose Gold <span class="folder-count">5</span></div>
+      </div>
+    </div>
+
+    <div class="upload-folder-group">
+      <div class="upload-folder-group-title">Gemstones</div>
+      <div class="upload-folder-pills">
+        <div class="upload-folder-pill">White Diamond <span class="folder-count">15</span></div>
+        <div class="upload-folder-pill">Ruby <span class="folder-count">4</span></div>
+        <div class="upload-folder-pill">Sapphire — Blue <span class="folder-count">6</span></div>
+        <div class="upload-folder-pill">Sapphire — Pink <span class="folder-count">2</span></div>
+        <div class="upload-folder-pill">Sapphire — Yellow <span class="folder-count">1</span></div>
+        <div class="upload-folder-pill">Sapphire — White <span class="folder-count">0</span></div>
+        <div class="upload-folder-pill">Emerald <span class="folder-count">3</span></div>
+        <div class="upload-folder-pill">Pearl <span class="folder-count">2</span></div>
+      </div>
+    </div>
+
+    <div class="upload-folder-group">
+      <div class="upload-folder-group-title">Product Types</div>
+      <div class="upload-folder-pills">
+        <div class="upload-folder-pill">Rings <span class="folder-count">18</span></div>
+        <div class="upload-folder-pill">Necklaces <span class="folder-count">9</span></div>
+        <div class="upload-folder-pill">Bracelets <span class="folder-count">6</span></div>
+        <div class="upload-folder-pill">Earrings <span class="folder-count">7</span></div>
+        <div class="upload-folder-pill">Watches <span class="folder-count">3</span></div>
+        <div class="upload-folder-pill">Grillz <span class="folder-count">4</span></div>
+      </div>
+    </div>
+
+    <div class="upload-folder-group">
+      <div class="upload-folder-group-title">Setting Styles</div>
+      <div class="upload-folder-pills">
+        <div class="upload-folder-pill">Invisible <span class="folder-count">3</span></div>
+        <div class="upload-folder-pill">Prong <span class="folder-count">8</span></div>
+        <div class="upload-folder-pill">Bezel <span class="folder-count">4</span></div>
+        <div class="upload-folder-pill">Channel <span class="folder-count">2</span></div>
+        <div class="upload-folder-pill">Pave <span class="folder-count">5</span></div>
+        <div class="upload-folder-pill">Tension <span class="folder-count">1</span></div>
+      </div>
+    </div>
+
+  </div><!-- /view-upload -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- RIL BROWSER VIEW -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="top-nav-view" id="view-ril">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <div class="section-title" style="font-size:12px;letter-spacing:2px;margin-bottom:4px;">Reference Image Library</div>
+        <div style="font-size:11px;color:#999;font-weight:300;">Searchable database — your approved images &amp; videos</div>
+      </div>
+      <div class="ril-type-toggle">
+        <div class="ril-type-btn active" onclick="switchRilType(this,&#39;images&#39;)">Images</div>
+        <div class="ril-type-btn" onclick="switchRilType(this,&#39;videos&#39;)">Videos</div>
+      </div>
+    </div>
+
+    <input type="text" class="ril-search" placeholder="Search: cool blue diamond necklace white gold..." style="width:100%;margin-bottom:20px;">
+
+    <div style="display:flex;gap:24px;min-height:400px;">
+
+      <!-- RIL Sidebar: Folders -->
+      <div style="width:200px;flex-shrink:0;">
+        <div class="ril-folder-group">
+          <div class="ril-folder-group-title">Presets</div>
+          <div class="ril-folder-item active">Cool Blue <span class="count">32</span></div>
+          <div class="ril-folder-item">White Retail <span class="count">15</span></div>
+          <div class="ril-folder-item">Yashica Film <span class="count">0</span></div>
+        </div>
+        <div class="ril-folder-group">
+          <div class="ril-folder-group-title">Materials</div>
+          <div class="ril-folder-item">White Gold <span class="count">12</span></div>
+          <div class="ril-folder-item">Yellow Gold <span class="count">8</span></div>
+          <div class="ril-folder-item">Rose Gold <span class="count">5</span></div>
+        </div>
+        <div class="ril-folder-group">
+          <div class="ril-folder-group-title">Gemstones</div>
+          <div class="ril-folder-item">White Diamond <span class="count">15</span></div>
+          <div class="ril-folder-item">Ruby <span class="count">4</span></div>
+          <div class="ril-folder-item">Sapphire <span class="count">9</span></div>
+          <div class="ril-folder-item">Emerald <span class="count">3</span></div>
+          <div class="ril-folder-item">Pearl <span class="count">2</span></div>
+        </div>
+        <div class="ril-folder-group">
+          <div class="ril-folder-group-title">Product Types</div>
+          <div class="ril-folder-item">Rings <span class="count">18</span></div>
+          <div class="ril-folder-item">Necklaces <span class="count">9</span></div>
+          <div class="ril-folder-item">Bracelets <span class="count">6</span></div>
+          <div class="ril-folder-item">Earrings <span class="count">7</span></div>
+          <div class="ril-folder-item">Watches <span class="count">3</span></div>
+          <div class="ril-folder-item">Grillz <span class="count">4</span></div>
+        </div>
+        <div class="ril-folder-group">
+          <div class="ril-folder-group-title">Setting Styles</div>
+          <div class="ril-folder-item">Invisible <span class="count">3</span></div>
+          <div class="ril-folder-item">Prong <span class="count">8</span></div>
+          <div class="ril-folder-item">Pave <span class="count">5</span></div>
+          <div class="ril-folder-item">Bezel <span class="count">4</span></div>
+        </div>
+      </div>
+
+      <!-- RIL Content: Grid -->
+      <div style="flex:1;">
+        <div class="ril-grid">
+          <div class="ril-thumb">
+            <span>Ring 01</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">WG</span>
+              <span class="ril-thumb-tag">Diamond</span>
+              <span class="ril-thumb-tag">Ring</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Ring 02</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">YG</span>
+              <span class="ril-thumb-tag">Ruby</span>
+              <span class="ril-thumb-tag">Ring</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Necklace 01</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">WG</span>
+              <span class="ril-thumb-tag">Sapphire</span>
+              <span class="ril-thumb-tag">Necklace</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Bracelet 01</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">RG</span>
+              <span class="ril-thumb-tag">Diamond</span>
+              <span class="ril-thumb-tag">Bracelet</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Grillz 01</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">YG</span>
+              <span class="ril-thumb-tag">Diamond</span>
+              <span class="ril-thumb-tag">Grillz</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Earrings 01</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">WG</span>
+              <span class="ril-thumb-tag">Emerald</span>
+              <span class="ril-thumb-tag">Earrings</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Watch 01</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">RG</span>
+              <span class="ril-thumb-tag">Diamond</span>
+              <span class="ril-thumb-tag">Watch</span>
+            </div>
+          </div>
+          <div class="ril-thumb">
+            <span>Ring 03</span>
+            <div class="ril-thumb-tags">
+              <span class="ril-thumb-tag">WG</span>
+              <span class="ril-thumb-tag">Pearl</span>
+              <span class="ril-thumb-tag">Ring</span>
+              <span class="ril-thumb-tag">Bezel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /view-ril -->
+
+</div><!-- /.app -->
+
+
+<!-- ═══ POST-RENDER SPLIT VIEW ═══ -->
+<div class="post-render" id="postRender">
+
+  <!-- Left: Full image preview -->
+  <div class="post-render-preview">
+
+    <!-- Top-left: Before/After + Brush pills -->
+    <div class="preview-tl">
+      <div class="pill-btn" onclick="this.classList.toggle('active')">Before / After</div>
+      <div class="pill-btn" id="brushToggle" onclick="toggleBrushPanel()"><span style="font-size:11px;">◉</span> Brush</div>
+    </div>
+
+    <!-- Top-right: History nav + History panel button -->
+    <div class="history-bar">
+      <div class="history-nav">
+        <button class="history-btn disabled" id="histBack" onclick="historyBack()">←</button>
+        <span class="history-counter" id="histCounter">1 / 1</span>
+        <button class="history-btn disabled" id="histFwd" onclick="historyForward()">→</button>
+      </div>
+      <div class="history-label-btn" onclick="toggleHistoryPanel()">History</div>
+    </div>
+
+    <!-- History panel dropdown -->
+    <div class="history-panel" id="historyPanel">
+      <div class="history-panel-header">
+        <div class="history-panel-title">Render History</div>
+        <div class="history-panel-close" onclick="toggleHistoryPanel()">×</div>
+      </div>
+      <div class="history-stats">
+        <div>Total <span id="histTotalCount">1</span></div>
+        <div class="exported-count">Exported <span id="histExportedCount">0</span></div>
+      </div>
+      <div class="history-filters">
+        <div class="history-filter active" onclick="filterHistory('all',this)">All</div>
+        <div class="history-filter" onclick="filterHistory('exported',this)">Exported</div>
+        <div class="history-filter" onclick="filterHistory('amendment',this)">Amended</div>
+        <div class="history-filter" onclick="filterHistory('re-render',this)">Re-renders</div>
+      </div>
+      <ul class="history-list" id="historyList"></ul>
+    </div>
+
+    <!-- Brush panel dropdown -->
+    <div class="brush-panel" id="brushPanel">
+      <div class="brush-panel-title">Selection Brush</div>
+      <div class="brush-size-row">
+        <label>Size</label>
+        <input type="range" min="4" max="60" value="20" oninput="updateBrushDot(this)">
+        <div class="brush-dot-preview"><div class="brush-dot" id="brushDotPanel" style="width:20px;height:20px;"></div></div>
+      </div>
+      <textarea class="brush-textarea" placeholder="e.g., remove shadow, smooth edge, fix reflection..."></textarea>
+      <button class="brush-apply" onclick="applyBrushFix()">Apply Fix</button>
+    </div>
+
+    <!-- Image -->
+    <div class="preview-img-wrap">
+      <div class="post-render-img" id="postRenderImg">1170 × 2532</div>
+    </div>
+
+    <!-- Amendments — flush below image -->
+    <div class="preview-prompt-area">
+      <div class="preview-prompt-label">Amendments</div>
+      <textarea class="preview-prompt-input" id="amendmentInput" placeholder="e.g., make background slightly darker, add soft shadow underneath, smooth the links on the left..."></textarea>
+      <div class="preview-prompt-actions">
+        <div class="preview-prompt-hint">Describe changes — AI applies to full image</div>
+        <button class="preview-prompt-apply" id="amendmentApply" onclick="applyAmendment()">Apply</button>
+      </div>
+    </div>
+
+    <!-- Bottom: filename + prev/next -->
+    <div class="preview-bottom">
+      <span class="preview-filename" id="postRenderFilename">diamond_ring_front.png</span>
+      <div class="preview-nav">
+        <div class="nav-btn">←</div>
+        <span class="nav-counter" id="postRenderCounter">1 / 7</span>
+        <div class="nav-btn">→</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right: Controls panel -->
+  <div class="post-render-controls">
+    <div class="post-render-header">
+      <div class="post-render-title" id="postRenderPreset">Cool Blue · Edit</div>
+      <div class="post-render-close" onclick="closePostRender()">×</div>
+    </div>
+
+    <!-- ═══ LIVE ADJUSTMENTS (instant, no re-render) ═══ -->
+    <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#7ec88b;margin-bottom:14px;font-weight:500;">Live — changes apply instantly</div>
+
+    <div class="section">
+      <div class="section-title">Adjust</div>
+      <div class="edit-slider-row">
+        <span class="edit-slider-label">Temperature</span>
+        <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+        <span class="edit-slider-val">0</span>
+      </div>
+      <div class="edit-slider-row">
+        <span class="edit-slider-label">Saturation</span>
+        <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+        <span class="edit-slider-val">0</span>
+      </div>
+      <div class="edit-slider-row">
+        <span class="edit-slider-label">Contrast</span>
+        <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+        <span class="edit-slider-val">0</span>
+      </div>
+      <div class="edit-slider-row">
+        <span class="edit-slider-label">Sharpness</span>
+        <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+        <span class="edit-slider-val">0</span>
+      </div>
+      <div class="edit-slider-row">
+        <span class="edit-slider-label">Grain</span>
+        <div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div>
+        <span class="edit-slider-val">0</span>
+      </div>
+    </div>
+
+    <!-- Export — always available when you're happy -->
+    <button class="export-btn" style="width:100%;justify-content:center;" onclick="exportFromPostRender()"><span class="export-icon">↓</span> Export</button>
+    <div style="font-size:9px;color:#ccc;margin-top:6px;font-style:italic;font-weight:300;text-align:center;">
+      Happy with what you see? Export now. Auto-files to RIL.
+    </div>
+
+    <div class="post-render-divider"></div>
+
+    <!-- ═══ RE-RENDER ZONE (requires AI regeneration) ═══ -->
+    <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#d4a846;margin-bottom:14px;font-weight:500;">Re-render — AI regenerates image</div>
+
+    <!-- Metal Type -->
+    <div class="section">
+      <div class="section-title">Metal Type</div>
+      <div class="toggle-pills">
+        <div class="toggle-pill active" onclick="selectPill(this); markRerender()"><span class="metal-dot wg"></span>White Gold</div>
+        <div class="toggle-pill" onclick="selectPill(this); markRerender()"><span class="metal-dot yg"></span>Yellow Gold</div>
+        <div class="toggle-pill" onclick="selectPill(this); markRerender()"><span class="metal-dot rg"></span>Rose Gold</div>
+      </div>
+      <div class="karat-row">
+        <div class="karat-pill" onclick="selectKarat(this); markRerender()">10k</div>
+        <div class="karat-pill active" onclick="selectKarat(this); markRerender()">14k</div>
+        <div class="karat-pill" onclick="selectKarat(this); markRerender()">18k</div>
+      </div>
+    </div>
+
+    <!-- Gemstone -->
+    <div class="section">
+      <div class="section-title">Gemstone</div>
+      <div class="toggle-pills" id="postGemPills">
+        <div class="toggle-pill active" onclick="selectPostGem(this); markRerender()"><span class="gem-dot diamond"></span>Diamond</div>
+        <div class="toggle-pill" onclick="selectPostGem(this); markRerender()"><span class="gem-dot ruby"></span>Ruby</div>
+        <div class="toggle-pill" onclick="selectPostGem(this); markRerender()"><span class="gem-dot sapphire-blue"></span>Sapphire</div>
+        <div class="toggle-pill" onclick="selectPostGem(this); markRerender()"><span class="gem-dot emerald"></span>Emerald</div>
+        <div class="toggle-pill" onclick="selectPostGem(this); markRerender()"><span class="gem-dot pearl"></span>Pearl</div>
+      </div>
+      <div class="karat-row" id="postSapphireColors" style="display:none;">
+        <div class="karat-pill active" onclick="selectKarat(this)">Blue</div>
+        <div class="karat-pill" onclick="selectKarat(this)">Pink</div>
+        <div class="karat-pill" onclick="selectKarat(this)">Yellow</div>
+        <div class="karat-pill" onclick="selectKarat(this)">White</div>
+      </div>
+    </div>
+
+    <!-- Recede -->
+    <div class="recede-section">
+      <div class="recede-label-row">
+        <span class="recede-title">Recede</span>
+        <span class="recede-val">0%</span>
+      </div>
+      <div class="recede-wrap">
+        <input type="range" class="recede-slider" min="0" max="50" value="0" oninput="updateRecede(this)">
+      </div>
+      <div class="recede-hint">Pull object back in frame — AI extends background</div>
+    </div>
+
+    <!-- Re-render button -->
+    <button class="render-btn" id="rerenderBtn" style="width:100%;text-align:center;opacity:0.3;pointer-events:none;" onclick="reRenderWithChanges()">Re-render with Changes</button>
+    <div style="font-size:9px;color:#ccc;margin-top:6px;font-style:italic;font-weight:300;text-align:center;">
+      Change metal, gemstone, karat, or recede — then re-render
+    </div>
+
+    <div class="post-render-divider"></div>
+
+    <!-- Product Type (for RIL tagging) -->
+    <div class="section">
+      <div class="section-title">Product Type</div>
+      <div class="toggle-pills">
+        <div class="toggle-pill active" onclick="selectPill(this)">Ring</div>
+        <div class="toggle-pill" onclick="selectPill(this)">Necklace</div>
+        <div class="toggle-pill" onclick="selectPill(this)">Bracelet</div>
+        <div class="toggle-pill" onclick="selectPill(this)">Earrings</div>
+        <div class="toggle-pill" onclick="selectPill(this)">Watch</div>
+        <div class="toggle-pill" onclick="selectPill(this)">Grillz</div>
+      </div>
+    </div>
+
+    <div class="post-render-divider"></div>
+
+    <!-- Generate Additional Views -->
+    <div class="section">
+      <div class="section-title">Generate Views</div>
+      <div class="toggle-pills">
+        <div class="toggle-pill" onclick="this.classList.toggle(&#39;active&#39;)">Side</div>
+        <div class="toggle-pill" onclick="this.classList.toggle(&#39;active&#39;)">Top</div>
+        <div class="toggle-pill" onclick="this.classList.toggle(&#39;active&#39;)">Lower</div>
+        <div class="toggle-pill" onclick="this.classList.toggle(&#39;active&#39;)">3/4</div>
+      </div>
+      <button class="render-btn" style="width:100%;text-align:center;margin-top:10px;font-size:10px;padding:10px 0;" onclick="alert(&#39;Generating anatomically identical views...&#39;)">Generate Selected Views</button>
+      <div style="font-size:9px;color:#ccc;margin-top:6px;font-style:italic;font-weight:300;text-align:center;">AI generates identical object from selected angles</div>
+    </div>
+
+    <div class="post-render-divider"></div>
+
+    <!-- Open deep editor -->
+    <button class="editor-btn secondary" style="width:100%;" onclick="openEditorFromPost()">Open Editor (Crop / Brush)</button>
+
+  </div>
+</div>
+
+<!-- ═══ VSCO-STYLE IMAGE EDITOR OVERLAY ═══ -->
+<div class="editor-overlay" id="editorOverlay" onclick="closeEditor(event)">
+  <div class="editor-panel" onclick="event.stopPropagation()">
+
+    <div class="editor-preview">
+      <div class="editor-preview-img" id="editorPreviewImg">1170 × 2532</div>
+      <div class="compare-btn" onclick="toggleCompare()">Before / After</div>
+      <div class="brush-btn" onclick="toggleBrush()">
+        <span class="brush-icon">◉</span> Brush
+      </div>
+      <!-- Brush controls panel -->
+      <div class="brush-controls" id="brushControls">
+        <div class="brush-controls-title">Selection Brush</div>
+        <div class="brush-size-row">
+          <span class="edit-slider-label" style="min-width:32px;">Size</span>
+          <input type="range" class="edit-slider" min="4" max="60" value="20" style="flex:1;" oninput="updateBrushSize(this)">
+          <div class="brush-size-preview"><div class="brush-size-dot" id="brushDot" style="width:20px;height:20px;"></div></div>
+        </div>
+        <textarea class="brush-prompt" placeholder="e.g., remove shadow, smooth edge, fix reflection..."></textarea>
+        <button class="brush-apply-btn">Apply Fix</button>
+      </div>
+      <div class="editor-filename" id="editorFilename">diamond_ring_front.png</div>
+      <div class="editor-nav">
+        <div class="editor-nav-btn" onclick="editorPrev()">←</div>
+        <div class="editor-nav-btn" onclick="editorNext()">→</div>
+      </div>
+    </div>
+
+    <div class="editor-sidebar">
+      <div class="editor-header">
+        <div class="editor-title">Edit</div>
+        <div class="editor-close" onclick="closeEditor()">×</div>
+      </div>
+
+      <div class="editor-tool-bar">
+        <div class="editor-tool-tab active" onclick="switchEditorTool(&#39;adjust&#39;)">Adjust</div>
+        <div class="editor-tool-tab" onclick="switchEditorTool(&#39;crop&#39;)">Crop</div>
+
+      </div>
+
+      <!-- ADJUST TOOL -->
+      <div class="editor-tool-content active" id="editor-adjust">
+        <div class="edit-group">
+          <div class="edit-group-title">Light</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Exposure</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Contrast</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Highlights</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Shadows</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+        </div>
+        <div class="editor-divider"></div>
+        <div class="edit-group">
+          <div class="edit-group-title">Color</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Temperature</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Tint</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Saturation</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Vibrance</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+        </div>
+        <div class="editor-divider"></div>
+        <div class="edit-group">
+          <div class="edit-group-title">Detail</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Sharpness</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Clarity</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+        </div>
+        <div class="editor-divider"></div>
+        <div class="edit-group">
+          <div class="edit-group-title">Film</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Grain</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Fade</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Vignette</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-100" max="100" value="0" oninput="updateVal(this)"></div><span class="edit-slider-val">0</span></div>
+        </div>
+      </div>
+
+      <!-- CROP TOOL -->
+      <div class="editor-tool-content" id="editor-crop">
+        <div class="crop-preview">
+          <div class="crop-frame ratio-free" id="cropFrame">
+            <div class="crop-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            <div class="crop-handle tl"></div><div class="crop-handle tr"></div><div class="crop-handle bl"></div><div class="crop-handle br"></div>
+          </div>
+        </div>
+        <div class="edit-group">
+          <div class="edit-group-title">Aspect Ratio</div>
+          <div class="ratio-pills">
+            <div class="ratio-pill active" onclick="setRatio(&#39;free&#39;,this)">Free</div>
+            <div class="ratio-pill" onclick="setRatio(&#39;1-1&#39;,this)">1:1</div>
+            <div class="ratio-pill" onclick="setRatio(&#39;4-5&#39;,this)">4:5</div>
+            <div class="ratio-pill" onclick="setRatio(&#39;9-16&#39;,this)">9:16</div>
+            <div class="ratio-pill" onclick="setRatio(&#39;16-9&#39;,this)">16:9</div>
+          </div>
+        </div>
+        <div class="editor-divider"></div>
+        <div class="edit-group">
+          <div class="edit-group-title">Straighten</div>
+          <div class="edit-slider-row"><span class="edit-slider-label">Rotate</span><div class="edit-slider-wrap"><div class="edit-slider-center"></div><input type="range" class="edit-slider" min="-45" max="45" value="0" oninput="updateVal(this)" id="straightenSlider"></div><span class="edit-slider-val">0°</span></div>
+        </div>
+        <div class="editor-divider"></div>
+        <div class="edit-group">
+          <div class="edit-group-title">Transform</div>
+          <div class="crop-actions">
+            <div class="crop-action-btn">Rotate L</div>
+            <div class="crop-action-btn">Rotate R</div>
+            <div class="crop-action-btn">Flip H</div>
+            <div class="crop-action-btn">Flip V</div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="editor-divider"></div>
+      <div class="editor-actions">
+        <button class="editor-btn secondary" onclick="closeEditor()">Cancel</button>
+        <button class="editor-btn primary" onclick="applyEdits()">Apply</button>
+      </div>
+      <div style="margin-top:10px;">
+        <button class="export-btn" style="width:100%;justify-content:center;" onclick="exportSingle()"><span class="export-icon">↓</span> Export Image</button>
+      </div>
+      <div class="editor-reset" onclick="resetEdits()">Reset all adjustments</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ TOP NAV ═══
+function switchTopNav(view) {
+  document.querySelectorAll('.top-nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.top-nav-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelectorAll('.top-nav-btn').forEach(b => {
+    const label = b.textContent.trim().toLowerCase();
+    if ((view === 'workspace' && label === 'workspace') ||
+        (view === 'upload' && label === 'upload centre') ||
+        (view === 'ril' && label === 'ril browser'))
+      b.classList.add('active');
+  });
+}
+
+// ═══ PRESETS ═══
+const presetNames = { coolblue:'Cool Blue', whiteretail:'White Retail', yashica:'Yashica Film', settings:'Settings' };
+let currentPreset = 'coolblue';
+let currentModes = { coolblue:'edit', whiteretail:'edit', yashica:'generate' };
+
+function switchPreset(id) {
+  currentPreset = id;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id)?.classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.textContent.trim() === presetNames[id]) t.classList.add('active');
+  });
+  if (id !== 'settings') {
+    document.getElementById('activeStyle').textContent = presetNames[id] || id;
+    const m = currentModes[id] || 'edit';
+    document.getElementById('activeMode').textContent = '· ' + (m === 'video' ? '360 Video' : m === 'generate' ? 'Generate' : 'Edit');
+    document.getElementById('renderBtn').textContent = m === 'video' ? 'Render Videos' : 'Render All';
+  }
+}
+
+function switchMode(preset, mode) {
+  currentModes[preset] = mode;
+  const bar = document.querySelector(`.mode-bar[data-preset="${preset}"]`);
+  bar.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  bar.querySelectorAll('.mode-btn').forEach(b => {
+    const l = b.textContent.trim().toLowerCase();
+    if ((mode==='edit'&&l==='edit')||(mode==='generate'&&l==='generate')||(mode==='video'&&l==='360 video')) b.classList.add('active');
+  });
+  ['edit','generate','video'].forEach(m => document.getElementById(preset+'-'+m)?.classList.remove('active'));
+  document.getElementById(preset+'-'+mode)?.classList.add('active');
+  document.getElementById('activeMode').textContent = '· ' + (mode==='video'?'360 Video':mode==='generate'?'Generate':'Edit');
+  document.getElementById('renderBtn').textContent = mode==='video'?'Render Videos':'Render All';
+}
+
+function addPreset() {
+  const name = prompt('New preset name:');
+  if (name) alert('Preset "'+name+'" created.');
+}
+
+// ═══ TOGGLE PILLS ═══
+function selectPill(el) {
+  el.closest('.toggle-pills').querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectMetal(el, type) {
+  el.closest('.toggle-pills').querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectKarat(el) {
+  el.closest('.karat-row').querySelectorAll('.karat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectGem(el) {
+  el.closest('.toggle-pills').querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const isSapphire = el.textContent.trim().includes('Sapphire');
+  const sapRow = document.getElementById('sapphireColors');
+  if (sapRow) sapRow.style.display = isSapphire ? 'flex' : 'none';
+}
+
+// ═══ EDITOR ═══
+function openEditor(filename) {
+  document.getElementById('editorFilename').textContent = filename || 'untitled.jpg';
+  document.getElementById('editorOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeEditor(e) {
+  if (e && e.target && !e.target.classList.contains('editor-overlay')) return;
+  document.getElementById('editorOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('brushControls').classList.remove('open');
+}
+
+function updateVal(slider) {
+  const val = slider.closest('.edit-slider-row').querySelector('.edit-slider-val');
+  const v = parseInt(slider.value);
+  const isDeg = slider.id === 'straightenSlider';
+  val.textContent = (v > 0 ? '+' : '') + v + (isDeg ? '°' : '');
+}
+
+function resetEdits() {
+  document.querySelectorAll('.editor-sidebar .edit-slider').forEach(s => { s.value = 0; });
+  document.querySelectorAll('.editor-sidebar .edit-slider-val').forEach(v => { v.textContent = '0'; });
+}
+
+function applyEdits() { closeEditor(); }
+
+function toggleCompare() { document.querySelector('.compare-btn').classList.toggle('active'); }
+function editorPrev() {}
+function editorNext() {}
+
+function switchEditorTool(tool) {
+  document.querySelectorAll('.editor-tool-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.editor-tool-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('editor-' + tool)?.classList.add('active');
+  document.querySelectorAll('.editor-tool-tab').forEach(t => {
+    if (t.textContent.trim().toLowerCase() === tool) t.classList.add('active');
+  });
+}
+
+// ═══ BRUSH TOOL ═══
+function toggleBrush() {
+  document.querySelector('.brush-btn').classList.toggle('active');
+  document.getElementById('brushControls').classList.toggle('open');
+}
+function updateBrushSize(slider) {
+  const size = parseInt(slider.value);
+  document.getElementById('brushDot').style.width = size + 'px';
+  document.getElementById('brushDot').style.height = size + 'px';
+}
+
+function reRenderWithChanges() {
+  const style = document.getElementById('activeStyle')?.textContent || document.getElementById('postRenderPreset')?.textContent || 'Cool Blue';
+  alert('Re-rendering with updated material settings in ' + style + '...\nOnly metal/karat/gemstone changes applied — geometry stays identical.');
+}
+
+// ═══ POST-RENDER VIEW ═══
+function openPostRender(filename) {
+  const style = document.getElementById('activeStyle').textContent;
+  const mode = document.getElementById('activeMode').textContent;
+  document.getElementById('postRenderPreset').textContent = style + ' ' + mode;
+  document.getElementById('postRenderFilename').textContent = filename || 'rendered_image.jpg';
+  document.getElementById('postRender').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePostRender() {
+  document.getElementById('postRender').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function exportFromPostRender() {
+  const fn = document.getElementById('postRenderFilename').textContent;
+  alert('Exporting "' + fn + '"\nAuto-filed to RIL folders by material, gemstone, and product type.');
+}
+function openEditorFromPost() {
+  const fn = document.getElementById('postRenderFilename').textContent;
+  openEditor(fn);
+}
+function selectPostGem(el) {
+  el.closest('.toggle-pills').querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  const isSapphire = el.textContent.trim().includes('Sapphire');
+  document.getElementById('postSapphireColors').style.display = isSapphire ? 'flex' : 'none';
+}
+
+// Activate re-render button when material/gem/recede changes
+function markRerender() {
+  const btn = document.getElementById('rerenderBtn');
+  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+}
+
+// Wire Render All button to open post-render view
+document.getElementById('renderBtn').addEventListener('click', function() {
+  openPostRender('diamond_ring_front.png');
+});
+
+// ═══ CROP ═══
+function setRatio(ratio, el) {
+  document.querySelectorAll('.ratio-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('cropFrame').className = 'crop-frame ratio-' + ratio;
+}
+
+// ═══ RECEDE ═══
+function updateRecede(slider) {
+  const section = slider.closest('.recede-section');
+  const val = section.querySelector('.recede-val');
+  const btn = section.querySelector('.recede-btn');
+  const v = parseInt(slider.value);
+  val.textContent = v + '%';
+  if (btn) {
+    if (v > 0) { btn.classList.add('ready'); btn.textContent = 'Recede ' + v + '%'; }
+    else { btn.classList.remove('ready'); btn.textContent = 'Recede'; }
+  }
+  const pct = (v / 50) * 100;
+  slider.style.background = `linear-gradient(to right, #1a1a1a ${pct}%, #ddd ${pct}%)`;
+  // If in post-render view, activate the re-render button
+  if (slider.closest('.post-render') && v > 0) markRerender();
+}
+function executeRecede(btn) {
+  const section = btn.closest('.recede-section');
+  const v = section.querySelector('.recede-slider').value;
+  btn.textContent = 'Regenerating...';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => { btn.textContent = 'Recede ' + v + '%'; btn.style.pointerEvents = 'auto'; }, 1500);
+}
+
+// ═══ RIL BROWSER ═══
+function switchRilType(el, type) {
+  el.closest('.ril-type-toggle').querySelectorAll('.ril-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+document.querySelectorAll('.ril-folder-item').forEach(item => {
+  item.addEventListener('click', function() {
+    this.closest('.top-nav-view').querySelectorAll('.ril-folder-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ═══ EXPORT ═══
+function exportImages() {
+  const style = document.getElementById('activeStyle').textContent;
+  const path = document.getElementById('exportPath').textContent;
+  alert('Exporting images (' + style + ') to:\n' + path + '\n\nImages auto-filed to RIL folders.');
+}
+function exportSingle() {
+  const fn = document.getElementById('editorFilename').textContent;
+  alert('Exporting "' + fn + '" — auto-filed to RIL folders by material, gemstone, and product type.');
+  closeEditor();
+}
+function changeExportFolder() {
+  const p = prompt('Export folder path:', document.getElementById('exportPath').textContent);
+  if (p) document.getElementById('exportPath').textContent = p;
+}
+
+// Feedback buttons
+document.querySelectorAll('.fb-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const li = this.closest('li');
+    const pos = li.querySelector('.fb-btn.positive');
+    const neg = li.querySelector('.fb-btn.negative');
+    if (this.classList.contains('positive')) { pos.classList.toggle('approved'); neg.classList.remove('rejected'); }
+    else { neg.classList.toggle('rejected'); pos.classList.remove('approved'); }
+  });
+});
+
+// ═══ RENDER HISTORY (Permanent Archive with Material Metadata) ═══
+
+function getCurrentMaterials() {
+  let metal = 'White Gold', karat = '14k', gem = 'Diamond', type = 'Ring';
+  const pr = document.getElementById('postRender');
+  if (!pr) return { metal, karat, gem, type };
+  pr.querySelectorAll('.section').forEach(sec => {
+    const title = sec.querySelector('.section-title')?.textContent?.trim();
+    if (title === 'Metal Type') {
+      sec.querySelectorAll('.toggle-pill').forEach(p => { if (p.classList.contains('active')) metal = p.textContent.trim(); });
+      sec.querySelectorAll('.karat-pill').forEach(p => { if (p.classList.contains('active')) karat = p.textContent.trim(); });
+    }
+    if (title === 'Gemstone') {
+      sec.querySelectorAll('.toggle-pill').forEach(p => { if (p.classList.contains('active')) gem = p.textContent.trim(); });
+    }
+    if (title === 'Product Type') {
+      sec.querySelectorAll('.toggle-pill').forEach(p => { if (p.classList.contains('active')) type = p.textContent.trim(); });
+    }
+  });
+  return { metal, karat, gem, type };
+}
+
+let renderHistory = [
+  { label: 'Original render', time: '', tag: 'initial', exported: false,
+    materials: { metal: 'White Gold', karat: '14k', gem: 'Diamond', type: 'Ring' } }
+];
+let currentHistIndex = 0;
+let currentFilter = 'all';
+
+function getTimeStr() {
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0') + ':' + d.getSeconds().toString().padStart(2,'0');
+}
+
+function getFilteredHistory() {
+  const all = renderHistory.map((item, i) => ({...item, origIndex: i}));
+  if (currentFilter === 'all') return all;
+  if (currentFilter === 'exported') return all.filter(h => h.exported);
+  return all.filter(h => h.tag === currentFilter);
+}
+
+function matSummary(m) {
+  if (!m) return '';
+  const parts = [m.metal, m.karat];
+  if (m.gem && m.gem !== 'None') parts.push(m.gem);
+  parts.push(m.type);
+  return parts.join(' · ');
+}
+
+function rilFolders(m) {
+  if (!m) return 'RIL';
+  const f = [m.metal];
+  if (m.gem && m.gem !== 'None') f.push(m.gem);
+  f.push(m.type);
+  return f.join(' + ');
+}
+
+function updateHistoryUI() {
+  const counter = document.getElementById('histCounter');
+  const back = document.getElementById('histBack');
+  const fwd = document.getElementById('histFwd');
+  const totalEl = document.getElementById('histTotalCount');
+  const exportedEl = document.getElementById('histExportedCount');
+  const list = document.getElementById('historyList');
+  if (!counter) return;
+
+  counter.textContent = (currentHistIndex + 1) + ' / ' + renderHistory.length;
+  back.classList.toggle('disabled', currentHistIndex === 0);
+  fwd.classList.toggle('disabled', currentHistIndex === renderHistory.length - 1);
+  if (totalEl) totalEl.textContent = renderHistory.length;
+  if (exportedEl) exportedEl.textContent = renderHistory.filter(h => h.exported).length;
+
+  if (!list) return;
+  const filtered = getFilteredHistory();
+  list.innerHTML = '';
+  filtered.forEach(item => {
+    const i = item.origIndex;
+    const li = document.createElement('li');
+    li.className = 'history-item' + (i === currentHistIndex ? ' active' : '');
+    li.onclick = () => jumpToHistory(i);
+
+    const tagClass = item.tag === 'amendment' ? 'amendment' :
+                     item.tag === 're-render' ? 'rerender' : '';
+    const badge = item.exported ? '<div class="history-exported-badge">✓</div>' : '';
+    const expBtn = item.exported
+      ? '<div style="font-size:9px;color:#5aa76a;flex-shrink:0;">✓</div>'
+      : '<div class="history-export-btn" onclick="event.stopPropagation();exportFromHistory(' + i + ')" title="Export">↓</div>';
+    const mLine = item.materials ? matSummary(item.materials) : '';
+
+    li.innerHTML = `
+      <div class="history-thumb-wrap"><div class="history-thumb"></div>${badge}</div>
+      <div class="history-meta">
+        <div class="history-meta-label">${item.label}</div>
+        ${mLine ? '<div class="history-meta-time" style="color:#999;">' + mLine + '</div>' : ''}
+        <div class="history-meta-time">${item.time}</div>
+        <span class="history-meta-tag ${tagClass}">${item.tag}</span>
+        ${item.exported ? '<span class="history-meta-tag exported">exported</span>' : ''}
+      </div>
+      ${expBtn}
+    `;
+    list.appendChild(li);
+  });
+}
+
+function historyBack() { if (currentHistIndex > 0) { currentHistIndex--; updateHistoryUI(); } }
+function historyForward() { if (currentHistIndex < renderHistory.length - 1) { currentHistIndex++; updateHistoryUI(); } }
+function jumpToHistory(i) { currentHistIndex = i; updateHistoryUI(); }
+
+function toggleHistoryPanel() {
+  document.getElementById('historyPanel').classList.toggle('open');
+}
+
+function filterHistory(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll('.history-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  updateHistoryUI();
+}
+
+function addToHistory(label, tag) {
+  renderHistory.push({ label, time: getTimeStr(), tag, exported: false, materials: {...getCurrentMaterials()} });
+  currentHistIndex = renderHistory.length - 1;
+  updateHistoryUI();
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#f5f3f0;padding:12px 28px;border-radius:24px;font-size:11px;letter-spacing:0.5px;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,0.2);font-family:Inter,sans-serif;transition:opacity 0.3s;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2200);
+}
+
+function exportFromHistory(index) {
+  const entry = renderHistory[index];
+  if (!entry) return;
+  entry.exported = true;
+  updateHistoryUI();
+  showToast('✓ Exported → RIL: ' + rilFolders(entry.materials));
+}
+
+// Override exportFromPostRender to use history system
+exportFromPostRender = function() { exportFromHistory(currentHistIndex); };
+
+// Override reRenderWithChanges to use history system
+const _origReRender = reRenderWithChanges;
+reRenderWithChanges = function() {
+  const btn = document.getElementById('rerenderBtn');
+  if (!btn) return;
+  const mats = getCurrentMaterials();
+  const label = mats.metal + ' ' + mats.karat + (mats.gem !== 'None' ? ' + ' + mats.gem : '');
+  btn.textContent = 'Regenerating...';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => {
+    addToHistory(label, 're-render');
+    btn.textContent = 'Re-render with Changes';
+    btn.style.pointerEvents = 'auto';
+    btn.style.opacity = '0.3';
+  }, 1500);
+};
+
+function applyAmendment() {
+  const input = document.getElementById('amendmentInput');
+  const btn = document.getElementById('amendmentApply');
+  if (!input || !btn) return;
+  const text = input.value.trim();
+  if (!text) return;
+  btn.textContent = 'Applying...';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => {
+    addToHistory(text.length > 32 ? text.substring(0, 32) + '...' : text, 'amendment');
+    input.value = '';
+    btn.textContent = 'Apply';
+    btn.style.pointerEvents = 'auto';
+  }, 1200);
+}
+
+function toggleBrushPanel() {
+  document.getElementById('brushToggle').classList.toggle('active');
+  document.getElementById('brushPanel').classList.toggle('open');
+}
+
+function updateBrushDot(input) {
+  const s = parseInt(input.value);
+  const dot = document.getElementById('brushDotPanel');
+  if (dot) { dot.style.width = s + 'px'; dot.style.height = s + 'px'; }
+}
+
+function applyBrushFix() {
+  const ta = document.querySelector('#brushPanel .brush-textarea');
+  const text = ta ? ta.value.trim() : 'brush fix';
+  if (text) {
+    setTimeout(() => {
+      addToHistory(text.length > 32 ? text.substring(0, 32) + '...' : text, 'brush');
+      if (ta) ta.value = '';
+      toggleBrushPanel();
+    }, 800);
+  }
+}
+
+// Init history when post-render opens
+const _origOpenPostRender = openPostRender;
+openPostRender = function(filename) {
+  _origOpenPostRender(filename);
+  renderHistory = [
+    { label: 'Original render', time: getTimeStr(), tag: 'initial', exported: false,
+      materials: getCurrentMaterials() }
+  ];
+  currentHistIndex = 0;
+  currentFilter = 'all';
+  updateHistoryUI();
+};
+</script>
+
+
+
+</body></html>

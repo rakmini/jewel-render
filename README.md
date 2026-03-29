@@ -63,8 +63,9 @@ jewelrender/
    ```
 
 4. **Open frontend**
-   - Local: `http://localhost:5000`
-   - Remote iPhone: `http://<mac-mini-ip>:5000`
+   - Local: `http://localhost:8080`
+   - Remote iPhone: `http://<mac-mini-ip>:8080`
+   - Or open `frontend/src/index.html` directly in a browser (no server needed)
 
 ## Tech Stack
 
@@ -77,24 +78,32 @@ jewelrender/
 ## Key Features
 
 - **Modular Style Presets** — Cool Blue, White Retail, Yashica Film (user-expandable)
+- **Material Controls** — Metal type (WG/YG/RG) + karat (10k/14k/18k), gemstone, product type
+- **Post-Render Studio** — Full split-screen editor: live adjust (instant) + re-render zone (AI)
+- **Render History** — Permanent archive every version, material metadata, retroactive export
+- **Amendments Prompt** — Describe changes in text; AI regenerates in place
+- **Selection Brush** — Paint area, describe fix; AI touches only marked region
 - **Cross-Preset Pipeline** — Render in one style, edit in another (jewelry stays identical)
-- **Reference Image Library** — Per-preset persistent image cloud with auto-deposit on export
-- **VSCO-Style Editor** — Adjust (light/color/detail/film) + Crop (rule-of-thirds, aspect ratio)
+- **Reference Image Library** — Per-preset, 4 folder categories (Materials/Gemstones/Product Types/Setting Styles); auto-files on export
+- **Upload Centre** — Batch seed RIL with drag-to-folder sorting + AI suggestions
+- **RIL Browser** — Searchable database, folder sidebar, image/video toggle
 - **Recede Control** — AI outpainting to extend background when shot too tight
-- **Feedback System** — +/− buttons per image feed training loop & parameter logging
+- **VSCO-Style Editor** — Adjust (light/color/detail/film) + Crop (rule-of-thirds, aspect ratio)
+- **360 Video** — Seamless rotating loops, 3 export aspect ratios, Video Recede
 - **Batch Processing** — Render multiple images with progress tracking
 
 ## Documentation
 
 See the `docs/` folder:
-- [Architecture](docs/ARCHITECTURE.md) — System design, data flow, preset system
+- [Spec v4](docs/JEWELRENDER_SPEC_v4.md) — **Single source of truth** — complete feature spec
+- [Architecture](docs/ARCHITECTURE.md) — System design, data flow, pipeline, RIL structure
+- [Features](docs/FEATURES.md) — Detailed specs for every feature
 - [API Reference](docs/API.md) — Endpoint specifications and ComfyUI integration
 - [Setup Guide](docs/SETUP.md) — Development environment, dependencies, Mac Mini config
-- [Features](docs/FEATURES.md) — Detailed specs for every feature
 
 ## Development
 
-All context and decisions are in `docs/ARCHITECTURE.md` and `docs/FEATURES.md`. Do not ask for re-explanations — read these files first.
+`docs/JEWELRENDER_SPEC_v4.md` is the single source of truth. Read it fully before making changes. All architectural context is in `docs/ARCHITECTURE.md` and `docs/FEATURES.md`.
 
 ## Owner & Contact
 
