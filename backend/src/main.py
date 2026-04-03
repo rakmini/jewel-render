@@ -1,9 +1,12 @@
 """JewelRender API Server
 
-A batch jewelry rendering application with ComfyUI backend.
+AI Engine: OpenAI APIs (cloud)
+- GPT-4.1-mini: Persistent brain (vision analysis, RIL tagging, quality assessment)
+- GPT Image 1.5: Image generation and editing
+- Sora 2: Video generation (360 rotations)
+
 Frontend: HTML/CSS/JS single-page app
 Backend: FastAPI Python server
-GPU: ComfyUI on Mac Mini M4
 Storage: Local filesystem
 """
 
@@ -17,7 +20,8 @@ import uvicorn
 
 from config import (
     API_HOST, API_PORT, API_DEBUG, CORS_ORIGINS,
-    COMFYUI_URL, USER_DATA_DIR, LOG_LEVEL
+    OPENAI_API_KEY, OPENAI_BRAIN_MODEL, OPENAI_IMAGE_MODEL,
+    OPENAI_VIDEO_MODEL, USER_DATA_DIR, LOG_LEVEL
 )
 
 # ============================================================================
@@ -36,8 +40,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title='JewelRender API',
-    description='Batch jewelry rendering with ComfyUI backend',
-    version='0.1.0',
+    description='Batch jewelry rendering with OpenAI APIs (GPT Image 1.5, GPT-4.1-mini brain, Sora 2 video)',
+    version='0.2.0',
     docs_url='/api/docs',
     redoc_url='/api/redoc',
     openapi_url='/api/openapi.json',
@@ -61,54 +65,61 @@ app.add_middleware(
 
 @app.get('/health')
 async def health_check():
-    """Check server health and ComfyUI connection."""
+    """Check server health and OpenAI API connection."""
     return {
         'status': 'ok',
         'service': 'JewelRender API',
-        'version': '0.1.0',
-        'comfyui_url': COMFYUI_URL,
+        'version': '0.2.0',
+        'ai_engine': 'openai',
+        'models': {
+            'brain': OPENAI_BRAIN_MODEL,
+            'image': OPENAI_IMAGE_MODEL,
+            'video': OPENAI_VIDEO_MODEL,
+        },
+        'api_key_configured': bool(OPENAI_API_KEY),
         'user_data_dir': str(USER_DATA_DIR),
     }
 
 
 @app.get('/api/health')
 async def api_health():
-    """API endpoint for health check."""
+    """API endpoint for detailed health check."""
+    from openai_client import test_openai_connection
+    connection_status = await test_openai_connection()
     return {
         'status': 'ok',
-        'comfyui': {
-            'url': COMFYUI_URL,
-            # TODO: Check actual ComfyUI connection
-            'connected': None,
-        },
+        'openai': connection_status,
         'storage': {
             'user_dir': str(USER_DATA_DIR),
-            # TODO: Check available disk space
         },
     }
 
 # ============================================================================
-# Placeholder Endpoints (to be implemented)
+# Preset Endpoints
 # ============================================================================
 
 @app.get('/api/presets')
 async def list_presets():
     """List all style presets."""
-    # TODO: Implement preset listing
+    # TODO: Implement preset listing from filesystem
     return {
         'presets': [],
         'total': 0,
     }
 
+# ============================================================================
+# Settings Endpoints
+# ============================================================================
 
 @app.get('/api/settings')
 async def get_settings():
     """Get current application settings."""
-    # TODO: Implement settings retrieval
     return {
-        'comfyui': {
-            'host': '127.0.0.1',
-            'port': 8188,
+        'openai': {
+            'brain_model': OPENAI_BRAIN_MODEL,
+            'image_model': OPENAI_IMAGE_MODEL,
+            'video_model': OPENAI_VIDEO_MODEL,
+            'api_key_configured': bool(OPENAI_API_KEY),
         },
         'output': {
             'width': 1170,
@@ -118,15 +129,42 @@ async def get_settings():
     }
 
 
+@app.post('/api/settings/test-connection')
+async def test_connection():
+    """Test OpenAI API connection."""
+    from openai_client import test_openai_connection
+    result = await test_openai_connection()
+    return result
+
+# ============================================================================
+# Render Endpoints
+# ============================================================================
+
 @app.post('/api/render')
 async def queue_render():
-    """Queue a render job."""
-    # TODO: Implement render queueing
+    """Queue a render job via OpenAI Images API."""
+    # TODO: Implement render queueing with OpenAI API
     return {
         'job_id': 'job-placeholder',
         'status': 'queued',
     }
 
+# ============================================================================
+# AI Brain Endpoints
+# ============================================================================
+
+@app.post('/api/analyze')
+async def analyze_image():
+    """Analyze an image using GPT-4.1-mini vision.
+
+    Returns metal type, gemstone, product type, setting style,
+    quality score, and suggested RIL folder tags.
+    """
+    # TODO: Implement with brain service
+    return {
+        'status': 'not_implemented',
+        'message': 'AI brain analysis endpoint — uses GPT-4.1-mini vision',
+    }
 
 # ============================================================================
 # Static Files (Frontend)
@@ -170,18 +208,18 @@ async def general_exception_handler(request, exc):
 async def startup_event():
     """Run on server startup."""
     logger.info('JewelRender API starting up...')
-    logger.info(f'ComfyUI URL: {COMFYUI_URL}')
+    logger.info(f'AI Engine: OpenAI APIs')
+    logger.info(f'Brain model: {OPENAI_BRAIN_MODEL}')
+    logger.info(f'Image model: {OPENAI_IMAGE_MODEL}')
+    logger.info(f'Video model: {OPENAI_VIDEO_MODEL}')
+    logger.info(f'API key configured: {bool(OPENAI_API_KEY)}')
     logger.info(f'User data directory: {USER_DATA_DIR}')
-    # TODO: Verify ComfyUI connection
-    # TODO: Initialize presets
-    # TODO: Load settings
 
 
 @app.on_event('shutdown')
 async def shutdown_event():
     """Run on server shutdown."""
     logger.info('JewelRender API shutting down...')
-    # TODO: Cleanup resources
 
 # ============================================================================
 # Main

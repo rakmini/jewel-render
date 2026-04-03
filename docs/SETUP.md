@@ -8,27 +8,11 @@
 
 ### Required Software
 
-#### 1. ComfyUI
-- **Version**: Latest stable
-- **Location**: Running on same Mac Mini
-- **Access**: `127.0.0.1:8188`
-- **Checkpoint**: `sd_xl_base_1.0.safetensors`
-- **Model Support**: Must support Apple Silicon (M4 compatible)
-
-**Installation**:
-```bash
-# If not already installed, follow ComfyUI setup for Mac:
-# https://github.com/comfyanonymous/ComfyUI
-
-# Ensure checkpoint is in:
-# ~/ComfyUI/models/checkpoints/sd_xl_base_1.0.safetensors
-```
-
-**Test Connection**:
-```bash
-curl http://127.0.0.1:8188/api/
-# Should return JSON response
-```
+#### 1. OpenAI API Key
+- **Sign up**: platform.openai.com (separate from ChatGPT subscription)
+- **Add credits**: Pay-as-you-go billing
+- **Get API key**: Settings > API Keys > Create new secret key
+- **Note**: ChatGPT Plus subscription does NOT include API access — they're billed separately
 
 #### 2. Python 3.10+
 ```bash
@@ -88,87 +72,25 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### 2. Install Dependencies
+#### 2. Configure OpenAI API
 
-**requirements.txt** should include:
-- fastapi — web framework
-- uvicorn — ASGI server
-- requests — HTTP client for ComfyUI
-- pillow — image processing
-- python-dotenv — configuration
-- pydantic — data validation
-
+Create `.env` file from template:
 ```bash
-pip install fastapi uvicorn requests pillow python-dotenv pydantic
+cp .env.example .env
 ```
 
-#### 3. Configure Backend
-
-Create `backend/config.py`:
-```python
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# ComfyUI Connection
-COMFYUI_HOST = os.getenv('COMFYUI_HOST', '127.0.0.1')
-COMFYUI_PORT = os.getenv('COMFYUI_PORT', '8188')
-COMFYUI_URL = f'http://{COMFYUI_HOST}:{COMFYUI_PORT}'
-
-# Output Settings
-OUTPUT_WIDTH = 1170
-OUTPUT_HEIGHT = 2532
-JPEG_QUALITY = 95
-
-# Storage
-USER_DATA_DIR = os.path.expanduser('~/JewelRender')
-PRESETS_DIR = os.path.join(USER_DATA_DIR, 'presets')
-EXPORTS_DIR = os.path.join(USER_DATA_DIR, 'exports')
-
-# Create dirs if not exist
-os.makedirs(PRESETS_DIR, exist_ok=True)
-os.makedirs(EXPORTS_DIR, exist_ok=True)
+Edit `.env` and add your API key:
+```
+OPENAI_API_KEY=sk-your-actual-api-key-here
 ```
 
-Create `.env` file:
-```
-COMFYUI_HOST=127.0.0.1
-COMFYUI_PORT=8188
-```
-
-#### 4. Create Entry Point
-
-Create `backend/src/main.py`:
-```python
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-import uvicorn
-
-app = FastAPI(title="JewelRender API")
-
-# CORS for local + Tailscale access
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Restrict in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Serve frontend
-app.mount("/", StaticFiles(directory="../../frontend/src", html=True), name="static")
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+**Test your API key**:
+```bash
+curl https://api.openai.com/v1/models \
+  -H "Authorization: Bearer sk-your-key-here" | python3 -m json.tool
 ```
 
-#### 5. Run Backend
+#### 3. Run Backend
 
 ```bash
 cd jewelrender/backend
@@ -178,6 +100,17 @@ python src/main.py
 # Server runs at http://0.0.0.0:5000
 # Access from Mac: http://localhost:5000
 # Access from iPhone: http://<mac-mini-ip>:5000
+```
+
+#### 4. Test Connection
+
+Once the server is running:
+```bash
+# Health check
+curl http://localhost:5000/health | python3 -m json.tool
+
+# Test OpenAI connection
+curl -X POST http://localhost:5000/api/settings/test-connection | python3 -m json.tool
 ```
 
 ### iPhone Remote Access
@@ -213,38 +146,15 @@ python src/main.py
    - Find Mac's Tailscale IP (e.g., 100.x.x.x)
    - Safari: `http://100.x.x.x:5000`
 
-### ComfyUI Workflow Integration
+### AI Models Used
 
-The backend needs to communicate with ComfyUI via HTTP API.
+| Model | Purpose | When it runs | Cost |
+|-------|---------|-------------|------|
+| GPT-4.1-mini | Brain — vision analysis, tagging, quality | Every image | ~$0.003/image |
+| GPT Image 1.5 | Stills — generate & edit jewelry photos | On render | $0.02-$0.20/image |
+| Sora 2 | Video — 360 rotation loops | On video render | Higher per-gen |
 
-#### Key Endpoints
-
-- `GET /api/` — Health check
-- `POST /prompt` — Queue workflow for execution
-- `GET /history/{prompt_id}` — Check workflow status/results
-
-#### Example Workflow (Image Generation)
-
-```json
-{
-  "1": {
-    "class_type": "CheckpointLoaderSimple",
-    "inputs": {
-      "ckpt_name": "sd_xl_base_1.0.safetensors"
-    }
-  },
-  "2": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "text": "beautiful jewelry on white background",
-      "clip": ["1", 0]
-    }
-  },
-  ...
-}
-```
-
-See `docs/API.md` for complete workflow examples.
+All three models use the same API key and bill to the same OpenAI Platform account.
 
 ### File Structure After Setup
 
@@ -262,15 +172,15 @@ jewelrender/
 │   ├── venv/                    # Python virtual environment
 │   ├── src/
 │   │   ├── main.py              # FastAPI app
-│   │   ├── comfyui/
-│   │   │   ├── client.py
-│   │   │   └── workflows.py
+│   │   ├── openai_client.py     # OpenAI API client (generate, edit, video)
+│   │   ├── brain.py             # AI brain (GPT-4.1-mini vision analysis)
 │   │   ├── utils/
-│   │   ├── models.py
-│   │   └── config.py
+│   │   │   └── image.py         # Local image processing (Pillow/OpenCV)
+│   │   ├── models.py            # Pydantic data models
+│   │   └── config.py            # Configuration
 │   ├── tests/
 │   ├── requirements.txt
-│   └── .env
+│   └── .env                     # OpenAI API key (not committed)
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   ├── API.md
@@ -302,9 +212,11 @@ jewelrender/
 
 ### Testing Checklist
 
-- [ ] ComfyUI running at `127.0.0.1:8188`
-- [ ] `curl http://127.0.0.1:8188/api/` returns JSON
+- [ ] OpenAI API key set in `.env`
+- [ ] `curl https://api.openai.com/v1/models -H "Authorization: Bearer $OPENAI_API_KEY"` returns models
 - [ ] Backend starts: `python src/main.py`
+- [ ] Health check passes: `curl http://localhost:5000/health`
+- [ ] OpenAI connection test: `POST /api/settings/test-connection` returns `connected: true`
 - [ ] Frontend loads: `http://localhost:5000`
 - [ ] iPhone can reach: `http://<mac-ip>:5000`
 - [ ] Preset data directory exists: `~/JewelRender/`
@@ -312,10 +224,10 @@ jewelrender/
 
 ### Troubleshooting
 
-**ComfyUI Connection Fails**
-- Check ComfyUI is running: `ps aux | grep comfy`
-- Check port: `lsof -i :8188`
-- Verify checkpoint exists
+**OpenAI API Key Issues**
+- Ensure key starts with `sk-`
+- Check you have API credits at platform.openai.com/account/billing
+- ChatGPT Plus does NOT give API access — they're separate billing
 
 **Python Module Errors**
 - Ensure venv activated: `source venv/bin/activate`
@@ -334,12 +246,13 @@ jewelrender/
 
 ## Next Steps
 
-1. Set up backend with FastAPI
-2. Create ComfyUI client in `backend/src/comfyui/`
-3. Implement API endpoints for each mode (Edit, Generate, 360 Video)
-4. Test with ComfyUI workflows
-5. Add image processing utilities
-6. Implement file persistence (presets, RIL, feedback)
-7. Wire frontend controls to backend API
+1. Get OpenAI API key from platform.openai.com
+2. Set up backend with `pip install -r requirements.txt`
+3. Configure `.env` with API key
+4. Test connection via `/api/settings/test-connection`
+5. Implement render endpoints (Generate, Edit, Video)
+6. Wire AI brain to analyze every image on entry
+7. Implement file persistence (presets, RIL, feedback)
+8. Wire frontend controls to backend API
 
 See `docs/API.md` for endpoint specifications.
